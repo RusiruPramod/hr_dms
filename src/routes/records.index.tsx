@@ -16,7 +16,7 @@ import {
 import { deleteIntern, listInterns } from "@/lib/interns";
 import type { InternRecord } from "@/lib/types";
 
-export const Route = createFileRoute("/records")({
+export const Route = createFileRoute("/records/")({
   head: () => ({
     meta: [
       { title: "Intern Records — DocuFlow HR" },
