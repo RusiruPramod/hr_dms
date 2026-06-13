@@ -9,38 +9,121 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as OfferLetterRouteImport } from './routes/offer-letter'
+import { Route as NdaRouteImport } from './routes/nda'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RecordsIndexRouteImport } from './routes/records.index'
+import { Route as RecordsNewRouteImport } from './routes/records.new'
+import { Route as RecordsIdRouteImport } from './routes/records.$id'
 
+const OfferLetterRoute = OfferLetterRouteImport.update({
+  id: '/offer-letter',
+  path: '/offer-letter',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NdaRoute = NdaRouteImport.update({
+  id: '/nda',
+  path: '/nda',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecordsIndexRoute = RecordsIndexRouteImport.update({
+  id: '/records/',
+  path: '/records/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecordsNewRoute = RecordsNewRouteImport.update({
+  id: '/records/new',
+  path: '/records/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecordsIdRoute = RecordsIdRouteImport.update({
+  id: '/records/$id',
+  path: '/records/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/nda': typeof NdaRoute
+  '/offer-letter': typeof OfferLetterRoute
+  '/records/$id': typeof RecordsIdRoute
+  '/records/new': typeof RecordsNewRoute
+  '/records/': typeof RecordsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/nda': typeof NdaRoute
+  '/offer-letter': typeof OfferLetterRoute
+  '/records/$id': typeof RecordsIdRoute
+  '/records/new': typeof RecordsNewRoute
+  '/records': typeof RecordsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/nda': typeof NdaRoute
+  '/offer-letter': typeof OfferLetterRoute
+  '/records/$id': typeof RecordsIdRoute
+  '/records/new': typeof RecordsNewRoute
+  '/records/': typeof RecordsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/nda'
+    | '/offer-letter'
+    | '/records/$id'
+    | '/records/new'
+    | '/records/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/nda'
+    | '/offer-letter'
+    | '/records/$id'
+    | '/records/new'
+    | '/records'
+  id:
+    | '__root__'
+    | '/'
+    | '/nda'
+    | '/offer-letter'
+    | '/records/$id'
+    | '/records/new'
+    | '/records/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  NdaRoute: typeof NdaRoute
+  OfferLetterRoute: typeof OfferLetterRoute
+  RecordsIdRoute: typeof RecordsIdRoute
+  RecordsNewRoute: typeof RecordsNewRoute
+  RecordsIndexRoute: typeof RecordsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/offer-letter': {
+      id: '/offer-letter'
+      path: '/offer-letter'
+      fullPath: '/offer-letter'
+      preLoaderRoute: typeof OfferLetterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nda': {
+      id: '/nda'
+      path: '/nda'
+      fullPath: '/nda'
+      preLoaderRoute: typeof NdaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +131,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/records/': {
+      id: '/records/'
+      path: '/records'
+      fullPath: '/records/'
+      preLoaderRoute: typeof RecordsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/records/new': {
+      id: '/records/new'
+      path: '/records/new'
+      fullPath: '/records/new'
+      preLoaderRoute: typeof RecordsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/records/$id': {
+      id: '/records/$id'
+      path: '/records/$id'
+      fullPath: '/records/$id'
+      preLoaderRoute: typeof RecordsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  NdaRoute: NdaRoute,
+  OfferLetterRoute: OfferLetterRoute,
+  RecordsIdRoute: RecordsIdRoute,
+  RecordsNewRoute: RecordsNewRoute,
+  RecordsIndexRoute: RecordsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
