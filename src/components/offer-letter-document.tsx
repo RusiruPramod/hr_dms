@@ -1,4 +1,4 @@
-import logoAsset from "@/assets/elephant-house-logo.png.asset.json";
+import logo from "@/assets/logo.png";
 import { formatDocDate, durationMonths, firstName } from "@/lib/format";
 import type { InternRecord } from "@/lib/types";
 
@@ -13,7 +13,7 @@ function Letterhead() {
           No. 117, Sir Chittampalam A. Gardiner Mawatha, Colombo 02, Sri Lanka
         </p>
       </div>
-      <img src={logoAsset.url} alt="Elephant House" className="h-16 w-auto" />
+      <img src={logo} alt="Elephant House" className="h-16 w-auto" />
     </div>
   );
 }

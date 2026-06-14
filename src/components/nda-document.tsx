@@ -1,4 +1,4 @@
-import logoAsset from "@/assets/elephant-house-logo.png.asset.json";
+import logo from "@/assets/logo.png";
 import { formatDocDate } from "@/lib/format";
 import type { InternRecord } from "@/lib/types";
 
@@ -18,7 +18,7 @@ export function NdaDocument({
   return (
     <div className="doc-canvas">
       <div className="flex items-center justify-center gap-3 mb-6">
-        <img src={logoAsset.url} alt="Elephant House" className="h-14 w-auto" />
+        <img src={logo} alt="Elephant House" className="h-14 w-auto" />
         <div className="text-center">
           <h1 className="text-[18pt] font-bold m-0 text-[#1a3a1a]">
             NON-DISCLOSURE AGREEMENT

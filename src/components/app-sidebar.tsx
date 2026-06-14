@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Users, UserPlus, FileText, ShieldCheck } from "lucide-react";
-import logoAsset from "@/assets/elephant-house-logo.png.asset.json";
+import { LayoutDashboard, Users, UserPlus, FileText } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 import {
   Sidebar,
@@ -20,8 +20,7 @@ const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Intern Records", url: "/records", icon: Users },
   { title: "New Record", url: "/records/new", icon: UserPlus },
-  { title: "Offer Letter", url: "/offer-letter", icon: FileText },
-  { title: "NDA Agreement", url: "/nda", icon: ShieldCheck },
+  { title: "Docs", url: "/docs", icon: FileText },
 ];
 
 export function AppSidebar() {
@@ -37,7 +36,7 @@ export function AppSidebar() {
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-2.5 px-2 py-2">
           <img
-            src={logoAsset.url}
+            src={logo}
             alt="Elephant House"
             className="h-9 w-9 shrink-0 object-contain"
           />
