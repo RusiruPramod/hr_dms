@@ -341,7 +341,15 @@ FIREBASE_PROJECT_ID=...
 STORAGE_BUCKET=...
 JWT_SECRET=...
 ```
-
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyD3u6gtXQw9fbDo-KeqefrzchcNVelt4sE",
+  authDomain: "hr-document-management-abfaa.firebaseapp.com",
+  projectId: "hr-document-management-abfaa",
+  storageBucket: "hr-document-management-abfaa.firebasestorage.app",
+  messagingSenderId: "308947813959",
+  appId: "1:308947813959:web:70692a6defc9ba0ad0d362"
+};
 ---------------------------
 
 ## 12. Migration & ORM
