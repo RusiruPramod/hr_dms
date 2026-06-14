@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Users, UserPlus, FileText, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Users, UserPlus, FileText } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 import {
@@ -20,8 +20,7 @@ const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Intern Records", url: "/records", icon: Users },
   { title: "New Record", url: "/records/new", icon: UserPlus },
-  { title: "Offer Letter", url: "/offer-letter", icon: FileText },
-  { title: "NDA Agreement", url: "/nda", icon: ShieldCheck },
+  { title: "Docs", url: "/docs", icon: FileText },
 ];
 
 export function AppSidebar() {
