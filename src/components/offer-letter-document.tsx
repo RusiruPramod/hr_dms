@@ -1,5 +1,6 @@
 import logo from "@/assets/logo.png";
-import { formatDocDate, durationMonths, firstName } from "@/lib/format";
+import { formatDocDate, durationMonths, firstName, formatNic } from "@/lib/format";
+import { COMPANY } from "@/lib/company";
 import type { InternRecord } from "@/lib/types";
 
 function Letterhead() {
@@ -31,7 +32,7 @@ export function OfferLetterDocument({
   const end = formatDocDate(intern?.endDate);
   const dur = durationMonths(intern?.startDate, intern?.endDate);
   const fn = firstName(intern?.fullName) || "[First Name]";
-  const nic = intern?.nic || "[NIC]";
+  const nic = formatNic(intern?.nic) || "[NIC]";
 
   return (
     <div className="doc-canvas">
@@ -59,8 +60,8 @@ export function OfferLetterDocument({
 
       <div className="mt-12">
         <div className="h-px w-56 bg-neutral-400" />
-        <p className="m-0 font-semibold">Wasantha Mudalige</p>
-        <p className="m-0 text-[10pt] text-neutral-600">Head of Human Resource Operation</p>
+        <p className="m-0 font-semibold">{COMPANY.authorizedSignatory.name}</p>
+        <p className="m-0 text-[10pt] text-neutral-600">{COMPANY.authorizedSignatory.title}</p>
       </div>
 
       <hr className="my-8 border-neutral-300" />
@@ -87,6 +88,11 @@ export function OfferLetterDocument({
       <p className="m-0">
         <strong>NIC:</strong> {nic}
       </p>
+      {intern?.phone ? (
+        <p className="m-0">
+          <strong>Telephone:</strong> {intern.phone}
+        </p>
+      ) : null}
     </div>
   );
 }

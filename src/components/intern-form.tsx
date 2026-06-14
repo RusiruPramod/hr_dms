@@ -225,7 +225,7 @@ export function InternForm({
               id="sup"
               value={form.supervisor}
               onChange={(e) => update("supervisor", e.target.value)}
-              placeholder="Wasantha Mudalige — Head of HR Operation"
+              placeholder="Wasantha Mudalige — Head of Human Resource Operation"
             />
           </div>
         </CardContent>
