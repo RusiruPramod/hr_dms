@@ -118,28 +118,37 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+
+  // Determine current path; allow SSR-safe access
+  const pathname = typeof window !== "undefined" ? window.location.pathname : router.state.location.pathname || "/";
+  const isAuthPage = pathname === "/login" || pathname.startsWith("/login");
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SidebarProvider>
-        <div className="flex min-h-screen w-full bg-background">
-          <AppSidebar />
-          <div className="flex flex-1 flex-col min-w-0">
-            <header className="sticky top-0 z-10 flex h-14 items-center gap-3 border-b border-border bg-background/80 backdrop-blur px-4">
-              <SidebarTrigger />
-              <div className="h-5 w-px bg-border" />
-              <p className="text-sm font-medium text-foreground">DocuFlow HR</p>
-              <span className="ml-auto text-xs text-muted-foreground">
-                Internship Document Automation
-              </span>
-            </header>
-            <main className="flex-1 min-w-0">
-              <Outlet />
-            </main>
-          </div>
+      {isAuthPage ? (
+        <div className="min-h-screen bg-background">
+          <Outlet />
         </div>
-        <Toaster richColors position="top-right" />
-      </SidebarProvider>
+      ) : (
+        <SidebarProvider>
+          <div className="flex min-h-screen w-full bg-background">
+            <AppSidebar />
+            <div className="flex flex-1 flex-col min-w-0">
+              <header className="sticky top-0 z-10 flex h-14 items-center gap-3 border-b border-border bg-background/80 backdrop-blur px-4">
+                <SidebarTrigger />
+                <div className="h-5 w-px bg-border" />
+                <p className="text-sm font-medium text-foreground">DocuFlow HR</p>
+                <span className="ml-auto text-xs text-muted-foreground">Internship Document Automation</span>
+              </header>
+              <main className="flex-1 min-w-0">
+                <Outlet />
+              </main>
+            </div>
+          </div>
+        </SidebarProvider>
+      )}
+      <Toaster richColors position="top-right" />
     </QueryClientProvider>
   );
 }

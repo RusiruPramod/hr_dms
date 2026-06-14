@@ -15,6 +15,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { signOut } from "firebase/auth";
+import { auth } from "@/firebase/firebase";
+import { Button } from "@/components/ui/button";
 
 const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -73,9 +76,24 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border">
         {!collapsed && (
-          <p className="px-2 py-1.5 text-[10px] text-muted-foreground">
-            v1.0 · Internship Automation
-          </p>
+          <div className="px-2 py-2">
+            <p className="text-[10px] text-muted-foreground mb-2">v1.0 · Internship Automation</p>
+            <Button
+              variant="ghost"
+              onClick={async () => {
+                try {
+                  await signOut(auth);
+                } catch (err) {
+                  console.error("Sign-out failed", err);
+                }
+                // Redirect to login page
+                window.location.href = "/login";
+              }}
+              className="w-full text-sm"
+            >
+              Logout
+            </Button>
+          </div>
         )}
       </SidebarFooter>
     </Sidebar>

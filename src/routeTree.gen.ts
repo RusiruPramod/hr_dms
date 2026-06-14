@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as OfferLetterRouteImport } from './routes/offer-letter'
 import { Route as NdaRouteImport } from './routes/nda'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RecordsIndexRouteImport } from './routes/records.index'
@@ -25,6 +26,11 @@ const OfferLetterRoute = OfferLetterRouteImport.update({
 const NdaRoute = NdaRouteImport.update({
   id: '/nda',
   path: '/nda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsRoute = DocsRouteImport.update({
@@ -56,6 +62,7 @@ const RecordsIdRoute = RecordsIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
+  '/login': typeof LoginRoute
   '/nda': typeof NdaRoute
   '/offer-letter': typeof OfferLetterRoute
   '/records/$id': typeof RecordsIdRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
+  '/login': typeof LoginRoute
   '/nda': typeof NdaRoute
   '/offer-letter': typeof OfferLetterRoute
   '/records/$id': typeof RecordsIdRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
+  '/login': typeof LoginRoute
   '/nda': typeof NdaRoute
   '/offer-letter': typeof OfferLetterRoute
   '/records/$id': typeof RecordsIdRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/docs'
+    | '/login'
     | '/nda'
     | '/offer-letter'
     | '/records/$id'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/docs'
+    | '/login'
     | '/nda'
     | '/offer-letter'
     | '/records/$id'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/docs'
+    | '/login'
     | '/nda'
     | '/offer-letter'
     | '/records/$id'
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DocsRoute: typeof DocsRoute
+  LoginRoute: typeof LoginRoute
   NdaRoute: typeof NdaRoute
   OfferLetterRoute: typeof OfferLetterRoute
   RecordsIdRoute: typeof RecordsIdRoute
@@ -135,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/nda'
       fullPath: '/nda'
       preLoaderRoute: typeof NdaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs': {
@@ -178,6 +198,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DocsRoute: DocsRoute,
+  LoginRoute: LoginRoute,
   NdaRoute: NdaRoute,
   OfferLetterRoute: OfferLetterRoute,
   RecordsIdRoute: RecordsIdRoute,
