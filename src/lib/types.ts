@@ -11,6 +11,8 @@ export interface InternRecord {
   phone: string;
   createdAt: number;
   updatedAt: number;
+  duration?: string;
+  metadata?: Record<string, any>;
 }
 
 export type InternInput = Omit<InternRecord, "id" | "createdAt" | "updatedAt">;
