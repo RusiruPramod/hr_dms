@@ -5,22 +5,42 @@ Use Firebase Auth for identity and Firebase Storage for storing generated docume
 
 ## Client setup
 1. Install: `npm install firebase`
-2. Add environment variables: `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`.
-3. Create `src/lib/firebase.ts` to initialize app, export `auth` and `storage`.
+2. Add environment variables (this project uses these names — see `.env.example`):
+  - `VITE_API_KEY`
+  - `VITE_AUTH_DOMAIN`
+  - `VITE_PROJECT_ID`
+  - `VITE_STORAGE_BUCKET`
+  - `VITE_MESSAGING_SENDER_ID`
+  - `VITE_APP_ID`
+3. The project initializes Firebase in `src/firebase/firebase.ts` and exports `auth` and `storage` for use in UI routes.
 
 ## Server setup
 1. Install admin SDK: `npm install firebase-admin`
-2. Provide service account JSON via `FIREBASE_SERVICE_ACCOUNT` (path or base64)
-3. Initialize admin in server code and use `admin.auth().verifyIdToken(idToken)` to authenticate requests
-4. Use `admin.storage().bucket()` to upload generated files from server
+2. Provide service account JSON via `FIREBASE_SERVICE_ACCOUNT` — this project expects a base64-encoded JSON string in the env variable (see `.env.example`). Example to set locally (PowerShell):
+
+```
+$svc = Get-Content serviceAccountKey.json | Out-String | ConvertTo-Base64String
+# then set FIREBASE_SERVICE_ACCOUNT to $svc
+```
+
+Or on Linux/macOS:
+
+```
+export FIREBASE_SERVICE_ACCOUNT=$(base64 serviceAccountKey.json | tr -d '\n')
+```
+
+3. The project provides `src/lib/firebase-admin.ts` which reads `FIREBASE_SERVICE_ACCOUNT` (base64), initializes `firebase-admin`, and uses `FIREBASE_STORAGE_BUCKET` for storage operations.
+4. Use `admin.auth().verifyIdToken(idToken)` to authenticate requests and `admin.storage().bucket()` to upload generated files server-side.
 
 ## Security rules
 - Storage: restrict writes to authenticated users and admin-only writes for produced documents
 - Firestore (if used): secure by role and validate required fields
 
 ## Signing flow
-1. Client captures signature (canvas), uploads to Storage (with user token) or sends to server to store via Admin
-2. Generated documents embed signature URLs when rendering templates
+1. Client captures signature (canvas), uploads to Storage (with user token) or sends to server to store via Admin.
+2. Generated documents embed signature URLs when rendering templates.
+
+Note: Storage buckets and rules should be configured to allow authenticated client uploads for temporary signature files; final generated documents should be written by server/admin to a protected bucket path.
 
 
 
