@@ -21,3 +21,23 @@ Use Firebase Auth for identity and Firebase Storage for storing generated docume
 ## Signing flow
 1. Client captures signature (canvas), uploads to Storage (with user token) or sends to server to store via Admin
 2. Generated documents embed signature URLs when rendering templates
+
+
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyD3u6gtXQw9fbDo-KeqefrzchcNVelt4sE",
+  authDomain: "hr-document-management-abfaa.firebaseapp.com",
+  projectId: "hr-document-management-abfaa",
+  storageBucket: "hr-document-management-abfaa.firebasestorage.app",
+  messagingSenderId: "308947813959",
+  appId: "1:308947813959:web:70692a6defc9ba0ad0d362"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
