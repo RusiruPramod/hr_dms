@@ -21,9 +21,7 @@ export function NdaDocument({
       <div className="flex items-center justify-center gap-3 mb-6">
         <img src={logo} alt="Elephant House" className="h-14 w-auto" />
         <div className="text-center">
-          <h1 className="text-[18pt] font-bold m-0 text-[#1a3a1a]">
-            NON-DISCLOSURE AGREEMENT
-          </h1>
+          <h1 className="text-[18pt] font-bold m-0 text-[#1a3a1a]">NON-DISCLOSURE AGREEMENT</h1>
           <p className="text-[9pt] text-neutral-600 m-0">Ceylon Cold Stores PLC</p>
         </div>
       </div>
@@ -43,30 +41,28 @@ export function NdaDocument({
       <p className="text-center font-semibold my-3">AND</p>
 
       <p className="text-justify">
-        <strong>{COMPANY.name}</strong>, a public limited company duly incorporated
-        in Sri Lanka and having its registered office at {COMPANY.address} (hereinafter referred to as the{" "}
+        <strong>{COMPANY.name}</strong>, a public limited company duly incorporated in Sri Lanka and
+        having its registered office at {COMPANY.address} (hereinafter referred to as the{" "}
         <strong>"Second Party"</strong>) of the other part.
       </p>
 
       <p className="text-justify mt-3">
-        <strong>WHEREAS</strong> the First Party desires to be an outsourced intern in
-        Ceylon Cold Stores PLC, in the <strong>{dept}</strong> Department of the Second
-        Party and the Second Party has agreed to such outsourced contract subject to the
-        terms and conditions set out herein, including the confidentiality of all
-        information disclosed during the internship.
+        <strong>WHEREAS</strong> the First Party desires to be an outsourced intern in Ceylon Cold
+        Stores PLC, in the <strong>{dept}</strong> Department of the Second Party and the Second
+        Party has agreed to such outsourced contract subject to the terms and conditions set out
+        herein, including the confidentiality of all information disclosed during the internship.
       </p>
 
       <p className="text-justify mt-3">
-        The First Party shall not, during the term of internship or at any time
-        thereafter, disclose to any third party any confidential information acquired in
-        the course of the internship, including but not limited to business processes,
-        trade secrets, customer data, financial information and proprietary technology.
+        The First Party shall not, during the term of internship or at any time thereafter, disclose
+        to any third party any confidential information acquired in the course of the internship,
+        including but not limited to business processes, trade secrets, customer data, financial
+        information and proprietary technology.
       </p>
 
       <p className="mt-8 font-semibold">IN WITNESS WHEREOF</p>
       <p className="text-justify">
-        The parties hereto have set their respective hands on the day and year first above
-        written.
+        The parties hereto have set their respective hands on the day and year first above written.
       </p>
 
       <div className="mt-10 grid grid-cols-2 gap-8">
@@ -165,7 +161,6 @@ export function NdaDocument({
           </p>
         </div>
       </div>
-
     </div>
   );
 }

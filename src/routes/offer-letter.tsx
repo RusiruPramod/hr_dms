@@ -9,7 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { listInterns } from "@/lib/interns";
 import { OfferLetterDocument } from "@/components/offer-letter-document";
@@ -41,9 +45,7 @@ function OfferLetterPage() {
   const { data: interns = [] } = useQuery({ queryKey: ["interns"], queryFn: listInterns });
 
   const [selectedId, setSelectedId] = useState<string | undefined>(id);
-  const [letterDate, setLetterDate] = useState<string>(
-    () => new Date().toISOString().slice(0, 10),
-  );
+  const [letterDate, setLetterDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
   const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -66,7 +68,7 @@ function OfferLetterPage() {
     try {
       await exportElementToPdf(previewRef.current, filename);
       toast.success("PDF downloaded locally");
-      
+
       // Upload to server in background
       toast.promise(
         (async () => {
@@ -85,7 +87,7 @@ function OfferLetterPage() {
           loading: "Saving copy to candidate's history...",
           success: "Saved to cloud history",
           error: "Failed to save to history",
-        }
+        },
       );
     } catch (err) {
       console.error(err);
@@ -120,7 +122,9 @@ function OfferLetterPage() {
                 </SelectTrigger>
                 <SelectContent>
                   {interns.length === 0 ? (
-                    <div className="p-2 text-xs text-muted-foreground">No records — create one first.</div>
+                    <div className="p-2 text-xs text-muted-foreground">
+                      No records — create one first.
+                    </div>
                   ) : (
                     interns.map((r) => (
                       <SelectItem key={r.id} value={r.id}>
@@ -144,9 +148,15 @@ function OfferLetterPage() {
 
             {intern && (
               <div className="rounded-md border border-border bg-muted/40 p-3 text-xs space-y-1">
-                <p><strong>Address:</strong> {intern.address}</p>
-                <p><strong>Dept:</strong> {intern.department}</p>
-                <p><strong>Period:</strong> {intern.startDate} → {intern.endDate}</p>
+                <p>
+                  <strong>Address:</strong> {intern.address}
+                </p>
+                <p>
+                  <strong>Dept:</strong> {intern.department}
+                </p>
+                <p>
+                  <strong>Period:</strong> {intern.startDate} → {intern.endDate}
+                </p>
               </div>
             )}
 

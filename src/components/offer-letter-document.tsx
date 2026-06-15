@@ -43,16 +43,14 @@ export function OfferLetterDocument({
 
       <p className="mt-6">Dear {fn},</p>
 
-      <h2 className="text-[13pt] font-bold underline mt-4 mb-2">
-        LETTER OF INTERNSHIP
-      </h2>
+      <h2 className="text-[13pt] font-bold underline mt-4 mb-2">LETTER OF INTERNSHIP</h2>
 
       <p className="text-justify">
         We are pleased to offer you a period of internship in the above company from{" "}
-        <strong>{start}</strong> to <strong>{end}</strong>. We expect you to make use of
-        this period to familiarize yourself with the corporate world by participating in
-        our day-to-day operations along with our employees. You should liaise with the
-        undersigned in relation to all matters during this period.
+        <strong>{start}</strong> to <strong>{end}</strong>. We expect you to make use of this period
+        to familiarize yourself with the corporate world by participating in our day-to-day
+        operations along with our employees. You should liaise with the undersigned in relation to
+        all matters during this period.
       </p>
 
       <p className="mt-8">Yours faithfully,</p>

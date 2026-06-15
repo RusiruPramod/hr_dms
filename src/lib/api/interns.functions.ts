@@ -108,7 +108,10 @@ export const deleteInternServer = createServerFn({ method: "POST" })
             if (url && url.includes("signatures/")) {
               const fileName = url.substring(url.indexOf("signatures/"));
               const decodedFileName = decodeURIComponent(fileName.split("?")[0]);
-              await bucket.file(decodedFileName).delete().catch(() => {});
+              await bucket
+                .file(decodedFileName)
+                .delete()
+                .catch(() => {});
             }
           }
         }
@@ -119,7 +122,10 @@ export const deleteInternServer = createServerFn({ method: "POST" })
             if (url && url.includes("documents/")) {
               const fileName = url.substring(url.indexOf("documents/"));
               const decodedFileName = decodeURIComponent(fileName.split("?")[0]);
-              await bucket.file(decodedFileName).delete().catch(() => {});
+              await bucket
+                .file(decodedFileName)
+                .delete()
+                .catch(() => {});
             }
           }
         }

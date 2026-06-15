@@ -104,7 +104,9 @@ export function getFirebaseAdmin() {
     if (process.env.NODE_ENV === "production") {
       throw new Error("FIREBASE_SERVICE_ACCOUNT is required in production");
     }
-    console.warn("FIREBASE_SERVICE_ACCOUNT is not set. Starting Firebase Admin in MOCK/BYPASS mode.");
+    console.warn(
+      "FIREBASE_SERVICE_ACCOUNT is not set. Starting Firebase Admin in MOCK/BYPASS mode.",
+    );
     initialized = true;
     isMock = true;
     return mockAdmin;
@@ -123,7 +125,10 @@ export function getFirebaseAdmin() {
     if (process.env.NODE_ENV === "production") {
       throw err;
     }
-    console.error("Failed to parse/initialize real Firebase Admin service account. Falling back to MOCK mode.", err?.message);
+    console.error(
+      "Failed to parse/initialize real Firebase Admin service account. Falling back to MOCK mode.",
+      err?.message,
+    );
     initialized = true;
     isMock = true;
     return mockAdmin;
@@ -131,4 +136,3 @@ export function getFirebaseAdmin() {
 }
 
 export default getFirebaseAdmin;
-

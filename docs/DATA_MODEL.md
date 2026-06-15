@@ -3,6 +3,7 @@
 ## Tables (PostgreSQL recommended)
 
 ### interns
+
 - id (uuid, pk)
 - full_name (text)
 - name_with_initials (text)
@@ -19,6 +20,7 @@
 - created_at, updated_at (timestamps)
 
 ### documents
+
 - id (uuid)
 - intern_id (fk)
 - type (offer|nda|other)
@@ -28,6 +30,7 @@
 - generated_by
 
 ### users (if self-hosted)
+
 - id (uuid)
 - uid (firebase uid)
 - email
@@ -35,4 +38,5 @@
 - role
 
 ### audit_logs
+
 - id, user_id, action, target_type, target_id, metadata (json), timestamp

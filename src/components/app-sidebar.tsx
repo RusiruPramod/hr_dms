@@ -45,11 +45,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-2.5 px-2 py-2">
-          <img
-            src={logo}
-            alt="Elephant House"
-            className="h-9 w-9 shrink-0 object-contain"
-          />
+          <img src={logo} alt="Elephant House" className="h-9 w-9 shrink-0 object-contain" />
           {!collapsed && (
             <div className="min-w-0">
               <p className="text-sm font-semibold leading-tight truncate">DocuFlow HR</p>

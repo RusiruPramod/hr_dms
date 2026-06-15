@@ -51,7 +51,7 @@ export function SignaturePad({ internId, type, onSave }: SignaturePadProps) {
     if (!canvas) return { x: 0, y: 0 };
 
     const rect = canvas.getBoundingClientRect();
-    
+
     // Support touch events
     if ("touches" in e) {
       if (e.touches.length === 0) return { x: 0, y: 0 };
@@ -67,7 +67,9 @@ export function SignaturePad({ internId, type, onSave }: SignaturePadProps) {
     };
   };
 
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const startDrawing = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>,
+  ) => {
     e.preventDefault();
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -120,10 +122,10 @@ export function SignaturePad({ internId, type, onSave }: SignaturePadProps) {
     setUploading(true);
     try {
       const dataUrl = canvas.toDataURL("image/png");
-      
+
       // Import the server function dynamically to avoid SSR bundles
       const { uploadSignatureServer } = await import("@/lib/api/interns.functions");
-      
+
       const res = await uploadSignatureServer({
         data: {
           internId,

@@ -42,10 +42,7 @@ export async function listInterns(): Promise<InternRecord[]> {
   return readLocal().sort((a, b) => b.updatedAt - a.updatedAt);
 }
 
-export async function saveIntern(
-  input: InternInput,
-  existingId?: string,
-): Promise<InternRecord> {
+export async function saveIntern(input: InternInput, existingId?: string): Promise<InternRecord> {
   if (firebaseEnabled) {
     try {
       const saved = await saveInternServer({
@@ -67,9 +64,7 @@ export async function saveIntern(
       });
       // Update local storage cache
       const all = readLocal();
-      const next = existingId
-        ? all.map((r) => (r.id === saved.id ? saved : r))
-        : [saved, ...all];
+      const next = existingId ? all.map((r) => (r.id === saved.id ? saved : r)) : [saved, ...all];
       writeLocal(next);
       return saved;
     } catch (err) {
@@ -87,9 +82,7 @@ export async function saveIntern(
     updatedAt: now,
   };
 
-  const next = existing
-    ? all.map((r) => (r.id === record.id ? record : r))
-    : [record, ...all];
+  const next = existing ? all.map((r) => (r.id === record.id ? record : r)) : [record, ...all];
   writeLocal(next);
   return record;
 }
@@ -118,4 +111,3 @@ export async function getIntern(id: string): Promise<InternRecord | null> {
   const rows = await listInterns();
   return rows.find((r) => r.id === id) ?? null;
 }
-

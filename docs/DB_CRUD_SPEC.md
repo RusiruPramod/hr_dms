@@ -99,6 +99,7 @@ CREATE TABLE audit_logs (
 ---
 
 ## Indexes & Performance
+
 - Index `interns_nic_idx` for NIC lookups
 - Index `documents_intern_id_idx` on documents(intern_id)
 - Consider composite index on `interns (department, start_date)` for queries by department and period.
@@ -114,7 +115,7 @@ CREATE INDEX interns_fullname_fts ON interns USING gin(to_tsvector('english', fu
 
 Base path: `/api`
 
-1) Create intern
+1. Create intern
 
 - POST `/api/interns`
 - Auth: bearer token with role `recruiter` or `admin`
@@ -142,12 +143,12 @@ Base path: `/api`
 
 Server behaviour: validate fields (nic format, date order), start DB transaction, insert row, write audit log, return created id.
 
-2) Read intern
+2. Read intern
 
 - GET `/api/interns/:id`
 - Response 200: intern record with embedded `documents` and `signatures` arrays.
 
-3) Update intern
+3. Update intern
 
 - PUT `/api/interns/:id`
 - Body: partial fields to update
@@ -155,18 +156,18 @@ Server behaviour: validate fields (nic format, date order), start DB transaction
 
 Server behaviour: validate changes, use transaction to update, append audit log.
 
-4) Delete intern
+4. Delete intern
 
 - DELETE `/api/interns/:id` (admin only)
 - Server: delete cascades documents & signatures; log action.
 
-5) Generate documents
+5. Generate documents
 
 - POST `/api/interns/:id/generate?docs=offer,nda`
 - Body: optional `{ "includeSignature": true }`
 - Server: enqueue generation job (document generation worker), return job id or wait and return generated `documents` array.
 
-6) Upload signature
+6. Upload signature
 
 - POST `/api/interns/:id/signature` (multipart/form-data)
 - Fields: `type` (intern|witness|hr), `file` (image/png)
@@ -177,11 +178,13 @@ Server behaviour: validate changes, use transaction to update, append audit log.
 ## Example SQL Queries
 
 - Find interns by NIC:
+
 ```sql
 SELECT * FROM interns WHERE nic = $1;
 ```
 
 - Get an intern with documents and signatures:
+
 ```sql
 SELECT i.*, json_agg(d.*) as documents, json_agg(s.*) as signatures
 FROM interns i
@@ -194,6 +197,7 @@ GROUP BY i.id;
 ---
 
 ## Transactions & Concurrency
+
 - Wrap multi-step operations in transactions (e.g., update intern + generate doc metadata). Use advisory locks if concurrent generation for same intern may occur.
 
 Example (pseudo):
@@ -211,29 +215,33 @@ This avoids partial states.
 
 ```ts
 // src/server/routes/interns.ts (example)
-import express from 'express';
-import { pool } from '../db';
+import express from "express";
+import { pool } from "../db";
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   const { fullName, nic, address } = req.body;
   // validation omitted
   const client = await pool.connect();
   try {
-    await client.query('BEGIN');
+    await client.query("BEGIN");
     const insert = await client.query(
-      'INSERT INTO interns (full_name, nic, address, created_by) VALUES ($1,$2,$3,$4) RETURNING id, created_at',
-      [fullName, nic, address, req.user?.id]
+      "INSERT INTO interns (full_name, nic, address, created_by) VALUES ($1,$2,$3,$4) RETURNING id, created_at",
+      [fullName, nic, address, req.user?.id],
     );
-    await client.query('INSERT INTO audit_logs (user_id, action, target_type, target_id) VALUES ($1,$2,$3,$4)',
-      [req.user?.id, 'create_intern', 'intern', insert.rows[0].id]);
-    await client.query('COMMIT');
+    await client.query(
+      "INSERT INTO audit_logs (user_id, action, target_type, target_id) VALUES ($1,$2,$3,$4)",
+      [req.user?.id, "create_intern", "intern", insert.rows[0].id],
+    );
+    await client.query("COMMIT");
     res.status(201).json(insert.rows[0]);
   } catch (err) {
-    await client.query('ROLLBACK');
+    await client.query("ROLLBACK");
     console.error(err);
-    res.status(500).send('failed');
-  } finally { client.release(); }
+    res.status(500).send("failed");
+  } finally {
+    client.release();
+  }
 });
 
 export default router;
@@ -242,24 +250,29 @@ export default router;
 ---
 
 ## Migration & ORM Recommendations
+
 - Use Prisma or Knex for schema migrations and type-safe DB access. Example: `prisma migrate dev` or `knex migrate:latest`.
 - Keep creation of `documents` and `signatures` in separate migrations with FK constraints.
 
 ## Backups & Retention
+
 - Regular DB backups (daily) and storage lifecycle rules for generated files (retain for X years). Consider GDPR/PDPA deletion workflows.
 
 ## Security Notes
+
 - Never store service account JSON in repo; use env vars or secret manager.
 - Encrypt PII in DB columns if required by policy.
 
 ---
 
 ## Monitoring & Observability
+
 - Log generation job durations and errors. Add Prometheus metrics or use hosted monitoring.
 
 ---
 
 ## Quick Checklist to Implement
+
 1. Create DB migrations for above tables.
 2. Add `users` mapping for Firebase UIDs.
 3. Implement CRUD endpoints with transaction and audit logging.

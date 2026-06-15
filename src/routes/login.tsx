@@ -92,13 +92,21 @@ function LoginComponent() {
             <Button type="submit" disabled={loading} className="flex-1">
               {loading ? "Signing in…" : "Sign in"}
             </Button>
-            <Button type="button" variant="outline" onClick={register} disabled={loading} className="flex-1">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={register}
+              disabled={loading}
+              className="flex-1"
+            >
               {loading ? "Creating…" : "Create account"}
             </Button>
           </div>
         </form>
 
-        <p className="text-xs text-muted-foreground mt-4">By signing in you agree to company policies.</p>
+        <p className="text-xs text-muted-foreground mt-4">
+          By signing in you agree to company policies.
+        </p>
       </div>
     </div>
   );

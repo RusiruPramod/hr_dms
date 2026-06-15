@@ -122,7 +122,10 @@ function RootComponent() {
   const router = useRouter();
 
   // Determine current path; allow SSR-safe access
-  const pathname = typeof window !== "undefined" ? window.location.pathname : router.state.location.pathname || "/";
+  const pathname =
+    typeof window !== "undefined"
+      ? window.location.pathname
+      : router.state.location.pathname || "/";
   const isAuthPage = pathname === "/login" || pathname.startsWith("/login");
 
   return (
@@ -140,7 +143,9 @@ function RootComponent() {
                 <SidebarTrigger />
                 <div className="h-5 w-px bg-border" />
                 <p className="text-sm font-medium text-foreground">DocuFlow HR</p>
-                <span className="ml-auto text-xs text-muted-foreground">Internship Document Automation</span>
+                <span className="ml-auto text-xs text-muted-foreground">
+                  Internship Document Automation
+                </span>
               </header>
               <main className="flex-1 min-w-0">
                 <Outlet />

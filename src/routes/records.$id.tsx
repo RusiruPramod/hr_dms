@@ -55,12 +55,17 @@ function EditRecord() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-4 p-6">
-      <Link to="/records" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
+      <Link
+        to="/records"
+        className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
+      >
         <ArrowLeft className="mr-1 h-4 w-4" /> Back to records
       </Link>
       <div>
         <h1 className="text-2xl font-semibold">Edit Intern Record</h1>
-        <p className="text-sm text-muted-foreground">Update master data and manage signatures & documents.</p>
+        <p className="text-sm text-muted-foreground">
+          Update master data and manage signatures & documents.
+        </p>
       </div>
 
       {isLoading || !intern ? (
@@ -71,11 +76,11 @@ function EditRecord() {
             <TabsTrigger value="details">Candidate Details</TabsTrigger>
             <TabsTrigger value="signatures">Signatures & Docs</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="details">
             <InternForm initial={intern} existing={existing} />
           </TabsContent>
-          
+
           <TabsContent value="signatures" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-3">
               {/* Intern Signature Pad */}
@@ -84,10 +89,16 @@ function EditRecord() {
                 {signatures.intern && (
                   <Card className="mt-2">
                     <CardHeader className="p-3 pb-0">
-                      <CardTitle className="text-xs font-medium">Intern Signature Preview</CardTitle>
+                      <CardTitle className="text-xs font-medium">
+                        Intern Signature Preview
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="p-3 flex justify-center bg-slate-50 rounded-b-lg border-t mt-2">
-                      <img src={signatures.intern} alt="Intern Signature" className="h-16 object-contain" />
+                      <img
+                        src={signatures.intern}
+                        alt="Intern Signature"
+                        className="h-16 object-contain"
+                      />
                     </CardContent>
                   </Card>
                 )}
@@ -99,10 +110,16 @@ function EditRecord() {
                 {signatures.witness && (
                   <Card className="mt-2">
                     <CardHeader className="p-3 pb-0">
-                      <CardTitle className="text-xs font-medium">Witness Signature Preview</CardTitle>
+                      <CardTitle className="text-xs font-medium">
+                        Witness Signature Preview
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="p-3 flex justify-center bg-slate-50 rounded-b-lg border-t mt-2">
-                      <img src={signatures.witness} alt="Witness Signature" className="h-16 object-contain" />
+                      <img
+                        src={signatures.witness}
+                        alt="Witness Signature"
+                        className="h-16 object-contain"
+                      />
                     </CardContent>
                   </Card>
                 )}
@@ -136,7 +153,8 @@ function EditRecord() {
               <CardContent>
                 {documents.length === 0 ? (
                   <div className="text-center py-6 text-sm text-muted-foreground border border-dashed rounded-lg">
-                    No documents generated yet. Head over to the Offer Letter or NDA pages to generate them.
+                    No documents generated yet. Head over to the Offer Letter or NDA pages to
+                    generate them.
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
@@ -151,9 +169,15 @@ function EditRecord() {
                       </thead>
                       <tbody>
                         {documents.map((docObj: any) => (
-                          <tr key={docObj.id} className="border-b border-border hover:bg-muted/40 transition-colors">
+                          <tr
+                            key={docObj.id}
+                            className="border-b border-border hover:bg-muted/40 transition-colors"
+                          >
                             <td className="py-3">
-                              <Badge variant={docObj.type === "offer" ? "default" : "secondary"} className="capitalize">
+                              <Badge
+                                variant={docObj.type === "offer" ? "default" : "secondary"}
+                                className="capitalize"
+                              >
                                 {docObj.type === "offer" ? "Offer Letter" : "NDA"}
                               </Badge>
                             </td>
@@ -163,7 +187,12 @@ function EditRecord() {
                             </td>
                             <td className="py-3 text-right">
                               <Button variant="ghost" size="sm" asChild>
-                                <a href={docObj.storageUrl} target="_blank" rel="noreferrer" download>
+                                <a
+                                  href={docObj.storageUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  download
+                                >
                                   <Download className="mr-1 h-4 w-4" /> Download
                                 </a>
                               </Button>
@@ -182,4 +211,3 @@ function EditRecord() {
     </div>
   );
 }
-
