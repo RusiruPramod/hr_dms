@@ -1,8 +1,9 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { InternForm } from "@/components/intern-form";
 import { getIntern, listInterns } from "@/lib/interns";
 import { ArrowLeft } from "lucide-react";
+import { getCurrentUser } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/records/$id")({
   head: () => ({
@@ -11,6 +12,12 @@ export const Route = createFileRoute("/records/$id")({
       { name: "description", content: "Edit an existing intern master record." },
     ],
   }),
+  beforeLoad: async () => {
+    const user = getCurrentUser();
+    if (!user) {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: EditRecord,
   notFoundComponent: () => (
     <div className="p-10 text-center text-muted-foreground">Record not found.</div>

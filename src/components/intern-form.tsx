@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+// suggestions are rendered inline; no Popover import required
 import { saveIntern } from "@/lib/interns";
 import type { InternRecord, InternInput } from "@/lib/types";
 import { durationMonths } from "@/lib/format";
@@ -21,6 +21,7 @@ const empty: InternInput = {
   endDate: "",
   supervisor: "",
   phone: "",
+  duration: "",
 };
 
 const nicValid = (v: string) => /^\d{12}$/.test(v) || /^\d{9}[vVxX]$/.test(v);
@@ -63,6 +64,7 @@ export function InternForm({
       department: r.department,
       startDate: r.startDate,
       endDate: r.endDate,
+      duration: r.duration ?? "",
       supervisor: r.supervisor,
       phone: r.phone,
     });
@@ -103,27 +105,21 @@ export function InternForm({
           <CardTitle className="text-base">Candidate Information</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 relative">
             <Label htmlFor="fullName">Full Name *</Label>
-            <Popover open={openSuggest && suggestions.length > 0} onOpenChange={setOpenSuggest}>
-              <PopoverTrigger asChild>
-                <Input
-                  id="fullName"
-                  value={form.fullName}
-                  onChange={(e) => {
-                    update("fullName", e.target.value);
-                    setOpenSuggest(true);
-                  }}
-                  onFocus={() => setOpenSuggest(true)}
-                  placeholder="e.g. Tashen Chamikara Maddumabandara"
-                  autoComplete="off"
-                />
-              </PopoverTrigger>
-              <PopoverContent
-                className="w-[--radix-popover-trigger-width] p-1"
-                align="start"
-                onOpenAutoFocus={(e) => e.preventDefault()}
-              >
+            <Input
+              id="fullName"
+              value={form.fullName}
+              onChange={(e) => {
+                update("fullName", e.target.value);
+                setOpenSuggest(true);
+              }}
+              onFocus={() => setOpenSuggest(true)}
+              placeholder="e.g. Tashen Chamikara Maddumabandara"
+              autoComplete="off"
+            />
+            {openSuggest && suggestions.length > 0 && (
+              <div className="absolute z-20 mt-1 w-full rounded-md border bg-popover p-1 shadow-lg">
                 {suggestions.map((s) => (
                   <button
                     key={s.id}
@@ -135,8 +131,8 @@ export function InternForm({
                     <div className="text-xs text-muted-foreground">NIC: {s.nic}</div>
                   </button>
                 ))}
-              </PopoverContent>
-            </Popover>
+              </div>
+            )}
           </div>
 
           <div>
@@ -214,10 +210,14 @@ export function InternForm({
             />
           </div>
           <div>
-            <Label>Duration (auto)</Label>
-            <div className="flex h-9 items-center rounded-md border border-input bg-muted/40 px-3 text-sm">
-              {dur}
-            </div>
+            <Label htmlFor="duration">Duration</Label>
+            <Input
+              id="duration"
+              value={form.duration || dur}
+              onChange={(e) => update("duration", e.target.value)}
+              placeholder={String(dur)}
+            />
+            <p className="text-xs text-muted-foreground mt-1">Clear to use auto-calculated duration.</p>
           </div>
           <div className="md:col-span-3">
             <Label htmlFor="sup">Supervisor Name &amp; Designation *</Label>
@@ -225,7 +225,7 @@ export function InternForm({
               id="sup"
               value={form.supervisor}
               onChange={(e) => update("supervisor", e.target.value)}
-              placeholder="Wasantha Mudalige — Head of HR Operation"
+              placeholder="Wasantha Mudalige — Head of Human Resource Operation"
             />
           </div>
         </CardContent>

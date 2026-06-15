@@ -1,5 +1,6 @@
 import logo from "@/assets/logo.png";
-import { formatDocDate } from "@/lib/format";
+import { formatDocDate, formatNic } from "@/lib/format";
+import { COMPANY } from "@/lib/company";
 import type { InternRecord } from "@/lib/types";
 
 export function NdaDocument({
@@ -10,7 +11,7 @@ export function NdaDocument({
   agreementDate: string;
 }) {
   const name = intern?.fullName || "[First Party Full Name]";
-  const nic = intern?.nic || "[NIC]";
+  const nic = formatNic(intern?.nic) || "[NIC]";
   const addr = intern?.address || "[Full Address]";
   const dept = intern?.department || "[Department]";
   const date = formatDocDate(agreementDate);
@@ -42,9 +43,8 @@ export function NdaDocument({
       <p className="text-center font-semibold my-3">AND</p>
 
       <p className="text-justify">
-        <strong>CEYLON COLD STORES PLC</strong>, a public limited company duly incorporated
-        in Sri Lanka and having its registered office at No. 117, Sir Chittampalam A.
-        Gardiner Mawatha, Colombo 02 (hereinafter referred to as the{" "}
+        <strong>{COMPANY.name}</strong>, a public limited company duly incorporated
+        in Sri Lanka and having its registered office at {COMPANY.address} (hereinafter referred to as the{" "}
         <strong>"Second Party"</strong>) of the other part.
       </p>
 
@@ -74,6 +74,7 @@ export function NdaDocument({
           <div className="h-px w-full bg-neutral-500" />
           <p className="m-0 text-[10pt] font-semibold">Signature of the First Party</p>
           <p className="m-0 text-[10pt]">{name}</p>
+          {intern?.phone ? <p className="m-0 text-[10pt]">Tel: {intern.phone}</p> : null}
         </div>
         <div>
           <div className="h-px w-full bg-neutral-500" />
@@ -91,16 +92,14 @@ export function NdaDocument({
 
       <hr className="my-6 border-neutral-300" />
 
-      <p className="font-semibold">
-        AUTHORIZED SIGNATURE OF THE SECOND PARTY (Ceylon Cold Stores PLC)
-      </p>
+      <p className="font-semibold">AUTHORIZED SIGNATURE OF THE SECOND PARTY ({COMPANY.name})</p>
       <div className="mt-2 grid grid-cols-2 gap-x-8 gap-y-3 text-[10pt]">
         <div>
           <p className="m-0">
-            <strong>Name:</strong> Wasantha Mudalige
+            <strong>Name:</strong> {COMPANY.authorizedSignatory.name}
           </p>
           <p className="m-0">
-            <strong>Designation:</strong> Head of Human Resource Operation
+            <strong>Designation:</strong> {COMPANY.authorizedSignatory.title}
           </p>
           <p className="m-0 mt-6">Signature: ____________________</p>
         </div>
@@ -115,10 +114,10 @@ export function NdaDocument({
       <div className="mt-2 grid grid-cols-2 gap-x-8 gap-y-3 text-[10pt]">
         <div>
           <p className="m-0">
-            <strong>Name:</strong> Kamal Hasan
+            <strong>Name:</strong> {COMPANY.witness.name}
           </p>
           <p className="m-0">
-            <strong>Designation:</strong> Assistant Manager — Human Resource
+            <strong>Designation:</strong> {COMPANY.witness.designation}
           </p>
           <p className="m-0 mt-6">Signature: ____________________</p>
         </div>

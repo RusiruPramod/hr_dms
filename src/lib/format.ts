@@ -28,3 +28,12 @@ export function firstName(full?: string): string {
 export function honorific(full?: string): string {
   return full ? "Mr./Ms." : "Mr./Ms.";
 }
+
+export function formatNic(nic?: string): string {
+  if (!nic) return "—";
+  // Normalise common NIC formats (keep as-is for non-standard values)
+  const cleaned = nic.replace(/\s|-/g, "");
+  // If it's 12 digits, group for readability
+  if (/^\d{12}$/.test(cleaned)) return `${cleaned.slice(0, 4)} ${cleaned.slice(4, 8)} ${cleaned.slice(8)}`;
+  return nic;
+}

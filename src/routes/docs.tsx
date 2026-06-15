@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { FileText, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { getCurrentUser } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/docs")({
   head: () => ({
@@ -11,6 +12,12 @@ export const Route = createFileRoute("/docs")({
       { name: "description", content: "Generate and manage HR documents." },
     ],
   }),
+  beforeLoad: async () => {
+    const user = getCurrentUser();
+    if (!user) {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: DocsPage,
 });
 
