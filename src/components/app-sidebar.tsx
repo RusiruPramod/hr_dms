@@ -33,8 +33,13 @@ export function AppSidebar() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const navigate = useNavigate();
 
-  const isActive = (url: string) =>
-    url === "/" ? pathname === "/" : pathname === url || pathname.startsWith(url + "/");
+  const isActive = (url: string) => {
+    if (pathname === url) return true;
+    if (url === "/") return false;
+    // Don't mark /records as active when on /records/new
+    if (url === "/records" && pathname.startsWith("/records/new")) return false;
+    return pathname.startsWith(url + "/");
+  };
 
   return (
     <Sidebar collapsible="icon">
