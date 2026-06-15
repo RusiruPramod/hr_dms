@@ -4,7 +4,7 @@
   and try to initialize firebase-admin when a base64 service account is provided.
   Usage: `node scripts/verify-firebase.js` or `npm run verify:firebase`
 */
-const admin = require('firebase-admin');
+import admin from 'firebase-admin';
 
 function log(key, value) {
   console.log(key.padEnd(30), value ? 'SET' : 'MISSING');
