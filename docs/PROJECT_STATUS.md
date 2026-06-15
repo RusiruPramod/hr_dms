@@ -1,11 +1,25 @@
 # Project Status & Next Steps
 **Last Updated:** 2026-06-15
 
-## Recent Updates (Session)
-- Fixed sidebar navigation: corrected active state logic for `/records` vs `/records/new` routes
-  - Issue: Both buttons showed active state simultaneously when navigating to "New Record"
-  - Solution: Updated `isActive` function to exclude `/records/new` from triggering `/records` active state
-  - Result: Proper hover/active state display for both navigation items
+## Work Log / Task Timeline
+
+### 2026-06-15 - Navigation & UI Refinements
+**Time:** ~30 min | **Status:** ✅ Complete
+
+| Task | Details | File(s) |
+|------|---------|---------|
+| Fix sidebar active state | Corrected routing logic for `/records` vs `/records/new` to prevent both buttons showing active simultaneously | `src/components/app-sidebar.tsx` |
+| Update project docs | Added session updates and work log tracking to status document | `docs/PROJECT_STATUS.md` |
+
+**Issues Fixed:**
+- Intern Records button remained active when navigating to New Record
+- Both buttons lost hover state due to conflicting active state logic
+
+**Solution:**
+- Updated `isActive()` function to explicitly exclude `/records/new` from `/records` parent match
+- Result: Proper exclusive active/hover state display for navigation items
+
+**Next Task:** Begin backend CRUD implementation (Firebase Admin setup & Firestore schema)
 
 ## Current state (from workspace)
  - **Frontend UI**: Sidebar navigation with proper routing and active states; form inputs and document templates complete
