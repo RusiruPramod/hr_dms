@@ -34,6 +34,7 @@ export function formatNic(nic?: string): string {
   // Normalise common NIC formats (keep as-is for non-standard values)
   const cleaned = nic.replace(/\s|-/g, "");
   // If it's 12 digits, group for readability
-  if (/^\d{12}$/.test(cleaned)) return `${cleaned.slice(0, 4)} ${cleaned.slice(4, 8)} ${cleaned.slice(8)}`;
+  if (/^\d{12}$/.test(cleaned))
+    return `${cleaned.slice(0, 4)} ${cleaned.slice(4, 8)} ${cleaned.slice(8)}`;
   return nic;
 }

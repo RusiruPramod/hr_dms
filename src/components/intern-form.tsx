@@ -47,9 +47,7 @@ export function InternForm({
   const suggestions = useMemo(() => {
     const q = form.fullName.trim().toLowerCase();
     if (!existing || q.length < 2) return [];
-    return existing
-      .filter((r) => r.fullName.toLowerCase().includes(q))
-      .slice(0, 5);
+    return existing.filter((r) => r.fullName.toLowerCase().includes(q)).slice(0, 5);
   }, [form.fullName, existing]);
 
   const update = <K extends keyof InternInput>(k: K, v: InternInput[K]) =>
@@ -217,7 +215,9 @@ export function InternForm({
               onChange={(e) => update("duration", e.target.value)}
               placeholder={String(dur)}
             />
-            <p className="text-xs text-muted-foreground mt-1">Clear to use auto-calculated duration.</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Clear to use auto-calculated duration.
+            </p>
           </div>
           <div className="md:col-span-3">
             <Label htmlFor="sup">Supervisor Name &amp; Designation *</Label>

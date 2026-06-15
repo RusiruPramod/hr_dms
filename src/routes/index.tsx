@@ -11,7 +11,10 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Dashboard — DocuFlow HR" },
-      { name: "description", content: "Internship document automation dashboard for Ceylon Cold Stores PLC." },
+      {
+        name: "description",
+        content: "Internship document automation dashboard for Ceylon Cold Stores PLC.",
+      },
     ],
   }),
   beforeLoad: async () => {
@@ -61,12 +64,8 @@ function Dashboard() {
             <Card className="transition-shadow hover:shadow-elegant">
               <CardContent className="flex items-center justify-between p-5">
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                    {s.label}
-                  </p>
-                  <p className="mt-1 text-3xl font-semibold">
-                    {isLoading ? "…" : s.value}
-                  </p>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">{s.label}</p>
+                  <p className="mt-1 text-3xl font-semibold">{isLoading ? "…" : s.value}</p>
                 </div>
                 <div className="rounded-xl bg-accent p-3 text-accent-foreground">
                   <s.icon className="h-5 w-5" />

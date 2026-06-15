@@ -1,12 +1,4 @@
-// Data access layer. Uses Firestore when configured, otherwise localStorage.
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  setDoc,
-} from "firebase/firestore";
-import { db, firebaseEnabled } from "./firebase";
+import { firebaseEnabled } from "./firebase";
 import type { InternRecord, InternInput } from "./types";
 
 const KEY = "docuflow.interns.v1";
@@ -30,24 +22,56 @@ function newId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+import {
+  listInternsServer,
+  getInternServer,
+  saveInternServer,
+  deleteInternServer,
+} from "./api/interns.functions";
+
 export async function listInterns(): Promise<InternRecord[]> {
-  if (firebaseEnabled && db) {
+  if (firebaseEnabled) {
     try {
-      const snap = await getDocs(collection(db, COL));
-      const rows = snap.docs.map((d) => d.data() as InternRecord);
+      const rows = await listInternsServer();
       writeLocal(rows); // cache locally
-      return rows.sort((a, b) => b.updatedAt - a.updatedAt);
+      return rows;
     } catch (err) {
-      console.warn("Firestore read failed, falling back to localStorage", err);
+      console.warn("Server listInterns failed, falling back to localStorage", err);
     }
   }
   return readLocal().sort((a, b) => b.updatedAt - a.updatedAt);
 }
 
-export async function saveIntern(
-  input: InternInput,
-  existingId?: string,
-): Promise<InternRecord> {
+export async function saveIntern(input: InternInput, existingId?: string): Promise<InternRecord> {
+  if (firebaseEnabled) {
+    try {
+      const saved = await saveInternServer({
+        data: {
+          input: {
+            fullName: input.fullName,
+            nameWithInitials: input.nameWithInitials ?? "",
+            nic: input.nic,
+            address: input.address,
+            department: input.department,
+            startDate: input.startDate,
+            endDate: input.endDate,
+            supervisor: input.supervisor,
+            phone: input.phone ?? "",
+            duration: input.duration ?? "",
+          },
+          existingId,
+        },
+      });
+      // Update local storage cache
+      const all = readLocal();
+      const next = existingId ? all.map((r) => (r.id === saved.id ? saved : r)) : [saved, ...all];
+      writeLocal(next);
+      return saved;
+    } catch (err) {
+      console.warn("Server saveIntern failed, falling back to localStorage", err);
+    }
+  }
+
   const now = Date.now();
   const all = readLocal();
   const existing = existingId ? all.find((r) => r.id === existingId) : undefined;
@@ -58,34 +82,32 @@ export async function saveIntern(
     updatedAt: now,
   };
 
-  const next = existing
-    ? all.map((r) => (r.id === record.id ? record : r))
-    : [record, ...all];
+  const next = existing ? all.map((r) => (r.id === record.id ? record : r)) : [record, ...all];
   writeLocal(next);
-
-  if (firebaseEnabled && db) {
-    try {
-      await setDoc(doc(db, COL, record.id), record);
-    } catch (err) {
-      console.warn("Firestore write failed (kept locally)", err);
-    }
-  }
   return record;
 }
 
 export async function deleteIntern(id: string): Promise<void> {
   const next = readLocal().filter((r) => r.id !== id);
   writeLocal(next);
-  if (firebaseEnabled && db) {
+
+  if (firebaseEnabled) {
     try {
-      await deleteDoc(doc(db, COL, id));
+      await deleteInternServer({ data: id });
     } catch (err) {
-      console.warn("Firestore delete failed", err);
+      console.warn("Server deleteIntern failed", err);
     }
   }
 }
 
 export async function getIntern(id: string): Promise<InternRecord | null> {
+  if (firebaseEnabled) {
+    try {
+      return await getInternServer({ data: id });
+    } catch (err) {
+      console.warn("Server getIntern failed, falling back to localStorage", err);
+    }
+  }
   const rows = await listInterns();
   return rows.find((r) => r.id === id) ?? null;
 }

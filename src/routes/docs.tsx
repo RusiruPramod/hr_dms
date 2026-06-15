@@ -27,9 +27,7 @@ function DocsPage() {
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Documents</h1>
-          <p className="text-lg text-gray-600">
-            Create and manage internship-related documents
-          </p>
+          <p className="text-lg text-gray-600">Create and manage internship-related documents</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -45,9 +43,7 @@ function DocsPage() {
             </CardHeader>
             <CardContent>
               <Link to="/offer-letter">
-                <Button className="w-full">
-                  Create Offer Letter
-                </Button>
+                <Button className="w-full">Create Offer Letter</Button>
               </Link>
             </CardContent>
           </Card>
@@ -58,15 +54,11 @@ function DocsPage() {
                 <ShieldCheck className="h-6 w-6 text-green-600" />
                 <CardTitle>NDA Agreement</CardTitle>
               </div>
-              <CardDescription>
-                Generate Non-Disclosure Agreements for interns
-              </CardDescription>
+              <CardDescription>Generate Non-Disclosure Agreements for interns</CardDescription>
             </CardHeader>
             <CardContent>
               <Link to="/nda">
-                <Button className="w-full">
-                  Create NDA Agreement
-                </Button>
+                <Button className="w-full">Create NDA Agreement</Button>
               </Link>
             </CardContent>
           </Card>

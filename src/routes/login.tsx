@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/firebase/firebase";
+import { auth } from "@/lib/firebase";
 import { getCurrentUser } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/login")({
@@ -92,13 +92,21 @@ function LoginComponent() {
             <Button type="submit" disabled={loading} className="flex-1">
               {loading ? "Signing in…" : "Sign in"}
             </Button>
-            <Button type="button" variant="outline" onClick={register} disabled={loading} className="flex-1">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={register}
+              disabled={loading}
+              className="flex-1"
+            >
               {loading ? "Creating…" : "Create account"}
             </Button>
           </div>
         </form>
 
-        <p className="text-xs text-muted-foreground mt-4">By signing in you agree to company policies.</p>
+        <p className="text-xs text-muted-foreground mt-4">
+          By signing in you agree to company policies.
+        </p>
       </div>
     </div>
   );

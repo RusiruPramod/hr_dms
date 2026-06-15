@@ -9,11 +9,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { listInterns } from "@/lib/interns";
 import { OfferLetterDocument } from "@/components/offer-letter-document";
-import { exportElementToPdf } from "@/lib/pdf";
+import { exportElementToPdf, generatePdfBase64 } from "@/lib/pdf";
 import { getCurrentUser } from "@/hooks/use-auth";
 
 const search = z.object({ id: z.string().optional() });
@@ -41,9 +45,7 @@ function OfferLetterPage() {
   const { data: interns = [] } = useQuery({ queryKey: ["interns"], queryFn: listInterns });
 
   const [selectedId, setSelectedId] = useState<string | undefined>(id);
-  const [letterDate, setLetterDate] = useState<string>(
-    () => new Date().toISOString().slice(0, 10),
-  );
+  const [letterDate, setLetterDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
   const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -62,12 +64,31 @@ function OfferLetterPage() {
 
   const onExport = async () => {
     if (!previewRef.current || !intern) return toast.error("Select an intern first");
+    const filename = `OfferLetter_${intern.fullName.replace(/\s+/g, "_")}.pdf`;
     try {
-      await exportElementToPdf(
-        previewRef.current,
-        `OfferLetter_${intern.fullName.replace(/\s+/g, "_")}.pdf`,
+      await exportElementToPdf(previewRef.current, filename);
+      toast.success("PDF downloaded locally");
+
+      // Upload to server in background
+      toast.promise(
+        (async () => {
+          const base64 = await generatePdfBase64(previewRef.current!);
+          const { uploadDocumentServer } = await import("@/lib/api/interns.functions");
+          await uploadDocumentServer({
+            data: {
+              internId: intern.id,
+              type: "offer",
+              documentBase64: base64,
+              fileName: filename,
+            },
+          });
+        })(),
+        {
+          loading: "Saving copy to candidate's history...",
+          success: "Saved to cloud history",
+          error: "Failed to save to history",
+        },
       );
-      toast.success("PDF exported");
     } catch (err) {
       console.error(err);
       toast.error("Failed to export PDF");
@@ -101,7 +122,9 @@ function OfferLetterPage() {
                 </SelectTrigger>
                 <SelectContent>
                   {interns.length === 0 ? (
-                    <div className="p-2 text-xs text-muted-foreground">No records — create one first.</div>
+                    <div className="p-2 text-xs text-muted-foreground">
+                      No records — create one first.
+                    </div>
                   ) : (
                     interns.map((r) => (
                       <SelectItem key={r.id} value={r.id}>
@@ -125,9 +148,15 @@ function OfferLetterPage() {
 
             {intern && (
               <div className="rounded-md border border-border bg-muted/40 p-3 text-xs space-y-1">
-                <p><strong>Address:</strong> {intern.address}</p>
-                <p><strong>Dept:</strong> {intern.department}</p>
-                <p><strong>Period:</strong> {intern.startDate} → {intern.endDate}</p>
+                <p>
+                  <strong>Address:</strong> {intern.address}
+                </p>
+                <p>
+                  <strong>Dept:</strong> {intern.department}
+                </p>
+                <p>
+                  <strong>Period:</strong> {intern.startDate} → {intern.endDate}
+                </p>
               </div>
             )}
 

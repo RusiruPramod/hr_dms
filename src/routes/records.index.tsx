@@ -7,11 +7,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { deleteIntern, listInterns } from "@/lib/interns";
 import type { InternRecord } from "@/lib/types";
@@ -21,7 +32,10 @@ export const Route = createFileRoute("/records/")({
   head: () => ({
     meta: [
       { title: "Intern Records — DocuFlow HR" },
-      { name: "description", content: "Master data table of all interns (Book1). Search, edit, delete and export." },
+      {
+        name: "description",
+        content: "Master data table of all interns (Book1). Search, edit, delete and export.",
+      },
     ],
   }),
   beforeLoad: async () => {
@@ -37,16 +51,34 @@ type SortKey = "fullName" | "department" | "startDate" | "endDate" | "updatedAt"
 
 function toCsv(rows: InternRecord[]): string {
   const headers = [
-    "Full Name", "Name with Initials", "NIC", "Address", "Department",
-    "Start Date", "End Date", "Supervisor", "Telephone",
+    "Full Name",
+    "Name with Initials",
+    "NIC",
+    "Address",
+    "Department",
+    "Start Date",
+    "End Date",
+    "Supervisor",
+    "Telephone",
   ];
   const esc = (v: string) => `"${(v ?? "").replace(/"/g, '""')}"`;
   const lines = [headers.join(",")];
   for (const r of rows) {
-    lines.push([
-      r.fullName, r.nameWithInitials, r.nic, r.address, r.department,
-      r.startDate, r.endDate, r.supervisor, r.phone,
-    ].map(esc).join(","));
+    lines.push(
+      [
+        r.fullName,
+        r.nameWithInitials,
+        r.nic,
+        r.address,
+        r.department,
+        r.startDate,
+        r.endDate,
+        r.supervisor,
+        r.phone,
+      ]
+        .map(esc)
+        .join(","),
+    );
   }
   return lines.join("\n");
 }
@@ -68,8 +100,9 @@ function RecordsPage() {
     const term = q.trim().toLowerCase();
     const out = term
       ? rows.filter((r) =>
-          [r.fullName, r.nic, r.department, r.supervisor, r.phone]
-            .some((v) => v?.toLowerCase().includes(term)),
+          [r.fullName, r.nic, r.department, r.supervisor, r.phone].some((v) =>
+            v?.toLowerCase().includes(term),
+          ),
         )
       : rows;
     return [...out].sort((a, b) => {
@@ -83,7 +116,10 @@ function RecordsPage() {
 
   const toggleSort = (k: SortKey) => {
     if (sortKey === k) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    else { setSortKey(k); setSortDir("asc"); }
+    else {
+      setSortKey(k);
+      setSortDir("asc");
+    }
   };
 
   const confirmDelete = async () => {
@@ -109,7 +145,9 @@ function RecordsPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Intern Records</h1>
-          <p className="text-sm text-muted-foreground">Master data (Book1) — {rows.length} record(s)</p>
+          <p className="text-sm text-muted-foreground">
+            Master data (Book1) — {rows.length} record(s)
+          </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={exportCsv} disabled={filtered.length === 0}>
@@ -136,24 +174,44 @@ function RecordsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead onClick={() => toggleSort("fullName")} className="cursor-pointer">Full Name</TableHead>
+                <TableHead onClick={() => toggleSort("fullName")} className="cursor-pointer">
+                  Full Name
+                </TableHead>
                 <TableHead>NIC</TableHead>
-                <TableHead onClick={() => toggleSort("department")} className="cursor-pointer">Department</TableHead>
-                <TableHead onClick={() => toggleSort("startDate")} className="cursor-pointer">Start</TableHead>
-                <TableHead onClick={() => toggleSort("endDate")} className="cursor-pointer">End</TableHead>
+                <TableHead onClick={() => toggleSort("department")} className="cursor-pointer">
+                  Department
+                </TableHead>
+                <TableHead onClick={() => toggleSort("startDate")} className="cursor-pointer">
+                  Start
+                </TableHead>
+                <TableHead onClick={() => toggleSort("endDate")} className="cursor-pointer">
+                  End
+                </TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">Loading…</TableCell></TableRow>
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                    Loading…
+                  </TableCell>
+                </TableRow>
               ) : filtered.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center text-muted-foreground py-10">
                     {rows.length === 0 ? (
-                      <>No records yet. <Link to="/records/new" className="text-primary underline">Create one</Link>.</>
-                    ) : "No matches."}
+                      <>
+                        No records yet.{" "}
+                        <Link to="/records/new" className="text-primary underline">
+                          Create one
+                        </Link>
+                        .
+                      </>
+                    ) : (
+                      "No matches."
+                    )}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -168,15 +226,26 @@ function RecordsPage() {
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
                         <Button size="icon" variant="ghost" asChild title="Offer Letter">
-                          <Link to="/offer-letter" search={{ id: r.id }}><FileText className="h-4 w-4" /></Link>
+                          <Link to="/offer-letter" search={{ id: r.id }}>
+                            <FileText className="h-4 w-4" />
+                          </Link>
                         </Button>
                         <Button size="icon" variant="ghost" asChild title="NDA">
-                          <Link to="/nda" search={{ id: r.id }}><ShieldCheck className="h-4 w-4" /></Link>
+                          <Link to="/nda" search={{ id: r.id }}>
+                            <ShieldCheck className="h-4 w-4" />
+                          </Link>
                         </Button>
                         <Button size="icon" variant="ghost" asChild title="Edit">
-                          <Link to="/records/$id" params={{ id: r.id }}><Pencil className="h-4 w-4" /></Link>
+                          <Link to="/records/$id" params={{ id: r.id }}>
+                            <Pencil className="h-4 w-4" />
+                          </Link>
                         </Button>
-                        <Button size="icon" variant="ghost" onClick={() => setDelTarget(r)} title="Delete">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => setDelTarget(r)}
+                          title="Delete"
+                        >
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>

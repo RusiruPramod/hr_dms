@@ -43,22 +43,27 @@ export function OfferLetterDocument({
 
       <p className="mt-6">Dear {fn},</p>
 
-      <h2 className="text-[13pt] font-bold underline mt-4 mb-2">
-        LETTER OF INTERNSHIP
-      </h2>
+      <h2 className="text-[13pt] font-bold underline mt-4 mb-2">LETTER OF INTERNSHIP</h2>
 
       <p className="text-justify">
         We are pleased to offer you a period of internship in the above company from{" "}
-        <strong>{start}</strong> to <strong>{end}</strong>. We expect you to make use of
-        this period to familiarize yourself with the corporate world by participating in
-        our day-to-day operations along with our employees. You should liaise with the
-        undersigned in relation to all matters during this period.
+        <strong>{start}</strong> to <strong>{end}</strong>. We expect you to make use of this period
+        to familiarize yourself with the corporate world by participating in our day-to-day
+        operations along with our employees. You should liaise with the undersigned in relation to
+        all matters during this period.
       </p>
 
       <p className="mt-8">Yours faithfully,</p>
       <p className="font-semibold m-0">Ceylon Cold Stores PLC</p>
 
       <div className="mt-12">
+        {intern?.metadata?.signatures?.hr && (
+          <img
+            src={intern.metadata.signatures.hr}
+            alt="HR Signature"
+            className="h-10 object-contain mb-1"
+          />
+        )}
         <div className="h-px w-56 bg-neutral-400" />
         <p className="m-0 font-semibold">{COMPANY.authorizedSignatory.name}</p>
         <p className="m-0 text-[10pt] text-neutral-600">{COMPANY.authorizedSignatory.title}</p>
@@ -74,6 +79,13 @@ export function OfferLetterDocument({
 
       <div className="mt-10 grid grid-cols-2 gap-8">
         <div>
+          {intern?.metadata?.signatures?.intern && (
+            <img
+              src={intern.metadata.signatures.intern}
+              alt="Intern Signature"
+              className="h-10 object-contain mb-1"
+            />
+          )}
           <div className="h-px w-full bg-neutral-400" />
           <p className="m-0 text-[10pt]">Signature</p>
         </div>
@@ -82,6 +94,7 @@ export function OfferLetterDocument({
           <p className="m-0 text-[10pt]">Date</p>
         </div>
       </div>
+
       <p className="mt-6 m-0">
         <strong>Name:</strong> {name}
       </p>
