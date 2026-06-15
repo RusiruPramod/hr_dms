@@ -1,6 +1,7 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { LayoutDashboard, Users, UserPlus, FileText } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { toast } from "sonner";
 
 import {
   Sidebar,
@@ -30,6 +31,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (r) => r.location.pathname });
+  const navigate = useNavigate();
 
   const isActive = (url: string) =>
     url === "/" ? pathname === "/" : pathname === url || pathname.startsWith(url + "/");
@@ -83,11 +85,12 @@ export function AppSidebar() {
               onClick={async () => {
                 try {
                   await signOut(auth);
+                  // Redirect to login page
+                  navigate({ to: "/login" });
                 } catch (err) {
                   console.error("Sign-out failed", err);
+                  toast.error("Failed to sign out");
                 }
-                // Redirect to login page
-                window.location.href = "/login";
               }}
               className="w-full text-sm"
             >
