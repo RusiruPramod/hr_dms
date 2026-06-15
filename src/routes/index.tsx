@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Users, FileText, ShieldCheck, UserPlus } from "lucide-react";
 import { listInterns } from "@/lib/interns";
 import { firebaseEnabled } from "@/lib/firebase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { getCurrentUser } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -13,6 +14,12 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Internship document automation dashboard for Ceylon Cold Stores PLC." },
     ],
   }),
+  beforeLoad: async () => {
+    const user = getCurrentUser();
+    if (!user) {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: Dashboard,
 });
 

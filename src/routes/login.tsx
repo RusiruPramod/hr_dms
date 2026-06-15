@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import logo from "@/assets/logo.png";
 import { Input } from "@/components/ui/input";
@@ -7,9 +7,16 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase/firebase";
+import { getCurrentUser } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Login — DocuFlow HR" }] }),
+  beforeLoad: async () => {
+    const user = getCurrentUser();
+    if (user) {
+      throw redirect({ to: "/records" });
+    }
+  },
   component: LoginComponent,
 });
 

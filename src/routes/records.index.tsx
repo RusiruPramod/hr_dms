@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { deleteIntern, listInterns } from "@/lib/interns";
 import type { InternRecord } from "@/lib/types";
+import { getCurrentUser } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/records/")({
   head: () => ({
@@ -23,6 +24,12 @@ export const Route = createFileRoute("/records/")({
       { name: "description", content: "Master data table of all interns (Book1). Search, edit, delete and export." },
     ],
   }),
+  beforeLoad: async () => {
+    const user = getCurrentUser();
+    if (!user) {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: RecordsPage,
 });
 

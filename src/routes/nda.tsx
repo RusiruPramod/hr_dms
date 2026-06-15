@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useRef, useState, useEffect } from "react";
 import { z } from "zod";
@@ -14,6 +14,7 @@ import {
 import { listInterns } from "@/lib/interns";
 import { NdaDocument } from "@/components/nda-document";
 import { exportElementToPdf } from "@/lib/pdf";
+import { getCurrentUser } from "@/hooks/use-auth";
 
 const search = z.object({ id: z.string().optional() });
 
@@ -25,6 +26,12 @@ export const Route = createFileRoute("/nda")({
       { name: "description", content: "Generate, preview and export NDA agreements for interns." },
     ],
   }),
+  beforeLoad: async () => {
+    const user = getCurrentUser();
+    if (!user) {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: NdaPage,
 });
 

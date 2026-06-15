@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { InternForm } from "@/components/intern-form";
 import { listInterns } from "@/lib/interns";
+import { getCurrentUser } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/records/new")({
   head: () => ({
@@ -10,6 +11,12 @@ export const Route = createFileRoute("/records/new")({
       { name: "description", content: "Create a new intern master record." },
     ],
   }),
+  beforeLoad: async () => {
+    const user = getCurrentUser();
+    if (!user) {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: NewRecord,
 });
 
