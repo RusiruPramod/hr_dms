@@ -17,7 +17,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { signOut } from "firebase/auth";
-import { auth } from "@/firebase/firebase";
+import { auth } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 
 const items = [

@@ -71,6 +71,13 @@ export function NdaDocument({
 
       <div className="mt-10 grid grid-cols-2 gap-8">
         <div>
+          {intern?.metadata?.signatures?.intern && (
+            <img
+              src={intern.metadata.signatures.intern}
+              alt="Intern Signature"
+              className="h-10 object-contain mb-1"
+            />
+          )}
           <div className="h-px w-full bg-neutral-500" />
           <p className="m-0 text-[10pt] font-semibold">Signature of the First Party</p>
           <p className="m-0 text-[10pt]">{name}</p>
@@ -86,7 +93,20 @@ export function NdaDocument({
       <div className="mt-2 grid grid-cols-2 gap-x-8 gap-y-3 text-[10pt]">
         <div>Name: _______________________________</div>
         <div>Designation: _________________________</div>
-        <div>Signature: ___________________________</div>
+        <div className="flex flex-col justify-end">
+          <div className="flex items-end gap-1">
+            <span>Signature:</span>
+            {intern?.metadata?.signatures?.witness ? (
+              <img
+                src={intern.metadata.signatures.witness}
+                alt="Witness Signature"
+                className="h-8 object-contain -mb-1"
+              />
+            ) : (
+              <span>___________________________</span>
+            )}
+          </div>
+        </div>
         <div>Date: _______________________________</div>
       </div>
 
@@ -101,7 +121,20 @@ export function NdaDocument({
           <p className="m-0">
             <strong>Designation:</strong> {COMPANY.authorizedSignatory.title}
           </p>
-          <p className="m-0 mt-6">Signature: ____________________</p>
+          <div className="m-0 mt-6 flex flex-col justify-end">
+            <div className="flex items-end gap-1">
+              <span>Signature:</span>
+              {intern?.metadata?.signatures?.hr ? (
+                <img
+                  src={intern.metadata.signatures.hr}
+                  alt="HR Signature"
+                  className="h-8 object-contain -mb-1"
+                />
+              ) : (
+                <span>____________________</span>
+              )}
+            </div>
+          </div>
         </div>
         <div>
           <p className="m-0">
@@ -119,7 +152,12 @@ export function NdaDocument({
           <p className="m-0">
             <strong>Designation:</strong> {COMPANY.witness.designation}
           </p>
-          <p className="m-0 mt-6">Signature: ____________________</p>
+          <div className="m-0 mt-6 flex flex-col justify-end">
+            <div className="flex items-end gap-1">
+              <span>Signature:</span>
+              <span>____________________</span>
+            </div>
+          </div>
         </div>
         <div>
           <p className="m-0">
@@ -127,6 +165,7 @@ export function NdaDocument({
           </p>
         </div>
       </div>
+
     </div>
   );
 }

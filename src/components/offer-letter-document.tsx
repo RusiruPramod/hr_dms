@@ -59,6 +59,13 @@ export function OfferLetterDocument({
       <p className="font-semibold m-0">Ceylon Cold Stores PLC</p>
 
       <div className="mt-12">
+        {intern?.metadata?.signatures?.hr && (
+          <img
+            src={intern.metadata.signatures.hr}
+            alt="HR Signature"
+            className="h-10 object-contain mb-1"
+          />
+        )}
         <div className="h-px w-56 bg-neutral-400" />
         <p className="m-0 font-semibold">{COMPANY.authorizedSignatory.name}</p>
         <p className="m-0 text-[10pt] text-neutral-600">{COMPANY.authorizedSignatory.title}</p>
@@ -74,6 +81,13 @@ export function OfferLetterDocument({
 
       <div className="mt-10 grid grid-cols-2 gap-8">
         <div>
+          {intern?.metadata?.signatures?.intern && (
+            <img
+              src={intern.metadata.signatures.intern}
+              alt="Intern Signature"
+              className="h-10 object-contain mb-1"
+            />
+          )}
           <div className="h-px w-full bg-neutral-400" />
           <p className="m-0 text-[10pt]">Signature</p>
         </div>
@@ -82,6 +96,7 @@ export function OfferLetterDocument({
           <p className="m-0 text-[10pt]">Date</p>
         </div>
       </div>
+
       <p className="mt-6 m-0">
         <strong>Name:</strong> {name}
       </p>

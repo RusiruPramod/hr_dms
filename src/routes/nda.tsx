@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { listInterns } from "@/lib/interns";
 import { NdaDocument } from "@/components/nda-document";
-import { exportElementToPdf } from "@/lib/pdf";
+import { exportElementToPdf, generatePdfBase64 } from "@/lib/pdf";
 import { getCurrentUser } from "@/hooks/use-auth";
 
 const search = z.object({ id: z.string().optional() });
@@ -62,12 +62,31 @@ function NdaPage() {
 
   const onExport = async () => {
     if (!previewRef.current || !intern) return toast.error("Select an intern first");
+    const filename = `NDA_${intern.fullName.replace(/\s+/g, "_")}_${agreementDate}.pdf`;
     try {
-      await exportElementToPdf(
-        previewRef.current,
-        `NDA_${intern.fullName.replace(/\s+/g, "_")}_${agreementDate}.pdf`,
+      await exportElementToPdf(previewRef.current, filename);
+      toast.success("PDF downloaded locally");
+      
+      // Upload to server in background
+      toast.promise(
+        (async () => {
+          const base64 = await generatePdfBase64(previewRef.current!);
+          const { uploadDocumentServer } = await import("@/lib/api/interns.functions");
+          await uploadDocumentServer({
+            data: {
+              internId: intern.id,
+              type: "nda",
+              documentBase64: base64,
+              fileName: filename,
+            },
+          });
+        })(),
+        {
+          loading: "Saving copy to candidate's history...",
+          success: "Saved to cloud history",
+          error: "Failed to save to history",
+        }
       );
-      toast.success("PDF exported");
     } catch (err) {
       console.error(err);
       toast.error("Failed to export PDF");
