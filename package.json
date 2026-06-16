@@ -5,12 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
+    "build": "vite build && nitro build",
+    "build:dev": "vite build --mode development && nitro build",
     "preview": "vite preview",
-    "verify:firebase": "node scripts/verify-firebase.js",
-    "lint": "eslint .",
-    "format": "prettier --write ."
+    "start": "node .vercel/output/server/index.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

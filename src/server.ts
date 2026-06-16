@@ -1,5 +1,4 @@
 import "./lib/error-capture";
-
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
@@ -50,6 +49,7 @@ async function normalizeCatastrophicSsrResponse(
   });
 }
 
+// ✅ Export the fetch handler for Vercel
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
