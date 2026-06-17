@@ -49,14 +49,14 @@ export function MobileHeader() {
           variant="ghost"
           size="icon"
           onClick={toggleSidebar}
-          className="flex-shrink-0 active:scale-95 transition-transform"
-          aria-label={isOpen ? "Close menu" : "Open menu"}
+          className="flex-shrink-0 active:scale-95 transition-transform hover:bg-accent"
+          aria-label={isOpen ? "Close menu" : "Open menu or swipe right"}
           title={isOpen ? "Close menu" : "Open menu or swipe right"}
         >
           {isOpen ? (
-            <X className="h-5 w-5" />
+            <X className="h-6 w-6" />
           ) : (
-            <Menu className="h-5 w-5" />
+            <Menu className="h-6 w-6" />
           )}
         </Button>
 
