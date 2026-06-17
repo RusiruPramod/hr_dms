@@ -32,19 +32,24 @@ import {
 export async function listInterns(): Promise<InternRecord[]> {
   if (firebaseEnabled) {
     try {
-      const rows = await listInternsServer();
-      writeLocal(rows); // cache locally
-      return rows;
+      console.log('[Firebase] 📡 Fetching interns from Firestore...')
+      const rows = await listInternsServer()
+      console.log(`[Firebase] ✅ Fetched ${rows.length} records`)
+      writeLocal(rows) // cache locally
+      return rows
     } catch (err) {
-      console.warn("Server listInterns failed, falling back to localStorage", err);
+      console.warn('[Firebase] ⚠️ Server listInterns failed, falling back to localStorage', err)
     }
   }
-  return readLocal().sort((a, b) => b.updatedAt - a.updatedAt);
+  const local = readLocal().sort((a, b) => b.updatedAt - a.updatedAt)
+  console.log(`[LocalStorage] 📦 Loaded ${local.length} records from cache`)
+  return local
 }
 
 export async function saveIntern(input: InternInput, existingId?: string): Promise<InternRecord> {
   if (firebaseEnabled) {
     try {
+      console.log(`[Firebase] 💾 Saving intern: ${input.fullName}`, { existingId, firebaseEnabled: true });
       const saved = await saveInternServer(
         {
           fullName: input.fullName,
@@ -60,13 +65,14 @@ export async function saveIntern(input: InternInput, existingId?: string): Promi
         },
         existingId,
       );
+      console.log(`[Firebase] ✅ Successfully saved: ${saved.id}`);
       // Update local storage cache
       const all = readLocal();
       const next = existingId ? all.map((r) => (r.id === saved.id ? saved : r)) : [saved, ...all];
       writeLocal(next);
       return saved;
     } catch (err) {
-      console.warn("Server saveIntern failed, falling back to localStorage", err);
+      console.warn(`[Firebase] ⚠️ Save failed, falling back to localStorage:`, err);
     }
   }
 
@@ -82,18 +88,22 @@ export async function saveIntern(input: InternInput, existingId?: string): Promi
 
   const next = existing ? all.map((r) => (r.id === record.id ? record : r)) : [record, ...all];
   writeLocal(next);
+  console.log(`[LocalStorage] 📦 Saved to cache: ${record.id}`);
   return record;
 }
 
 export async function deleteIntern(id: string): Promise<void> {
+  console.log(`[LocalStorage] 🗑️ Deleting record: ${id}`);
   const next = readLocal().filter((r) => r.id !== id);
   writeLocal(next);
 
   if (firebaseEnabled) {
     try {
+      console.log(`[Firebase] 🗑️ Deleting from Firestore: ${id}`);
       await deleteInternServer(id);
+      console.log(`[Firebase] ✅ Successfully deleted: ${id}`);
     } catch (err) {
-      console.warn("Server deleteIntern failed", err);
+      console.warn(`[Firebase] ⚠️ Delete failed:`, err);
     }
   }
 }

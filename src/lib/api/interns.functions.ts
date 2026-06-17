@@ -11,11 +11,13 @@ function newId() {
 // 1. List Interns
 export const listInternsServer = async () => {
   try {
+    console.log('[Firestore] 🔍 Querying interns collection...');
     const snap = await getDocs(collection(db, "interns"));
     const rows = snap.docs.map((d) => d.data() as InternRecord);
+    console.log(`[Firestore] ✅ Query successful: ${rows.length} records`);
     return rows.sort((a, b) => b.updatedAt - a.updatedAt);
   } catch (err) {
-    console.error("Failed to list interns:", err);
+    console.error("[Firestore] ❌ Failed to list interns:", err);
     throw err;
   }
 };
@@ -47,6 +49,7 @@ export const saveInternServer = async (input: {
   duration?: string;
 }, existingId?: string) => {
   try {
+    console.log(`[Firestore] 💾 Saving record: ${input.fullName}`, { isUpdate: !!existingId });
     const now = Date.now();
     let recordId = existingId || newId();
     let existingRecord: any = null;
@@ -68,9 +71,10 @@ export const saveInternServer = async (input: {
     };
 
     await setDoc(doc(db, "interns", recordId), record, { merge: true });
+    console.log(`[Firestore] ✅ Save successful: ${recordId}`);
     return record;
   } catch (err) {
-    console.error("Failed to save intern:", err);
+    console.error("[Firestore] ❌ Failed to save intern:", err);
     throw err;
   }
 };
@@ -78,6 +82,7 @@ export const saveInternServer = async (input: {
 // 4. Delete Intern
 export const deleteInternServer = async (id: string) => {
   try {
+    console.log(`[Firestore] 🗑️ Deleting record: ${id}`);
     const docRef = doc(db, "interns", id);
     const docSnap = await getDoc(docRef);
     
@@ -94,9 +99,10 @@ export const deleteInternServer = async (id: string) => {
               const decodedFileName = decodeURIComponent(fileName.split("?")[0]);
               const fileRef = ref(storage, decodedFileName);
               await deleteObject(fileRef).catch(() => {});
+              console.log(`[Storage] 🗑️ Deleted signature: ${type}`);
             }
           } catch (err) {
-            console.warn("Failed to delete signature file:", err);
+            console.warn("[Storage] ⚠️ Failed to delete signature file:", err);
           }
         }
       }
@@ -111,17 +117,19 @@ export const deleteInternServer = async (id: string) => {
               const decodedFileName = decodeURIComponent(fileName.split("?")[0]);
               const fileRef = ref(storage, decodedFileName);
               await deleteObject(fileRef).catch(() => {});
+              console.log(`[Storage] 🗑️ Deleted document file`);
             }
           } catch (err) {
-            console.warn("Failed to delete document file:", err);
+            console.warn("[Storage] ⚠️ Failed to delete document file:", err);
           }
         }
       }
 
       await deleteDoc(docRef);
+      console.log(`[Firestore] ✅ Delete successful: ${id}`);
     }
   } catch (err) {
-    console.error("Failed to delete intern:", err);
+    console.error("[Firestore] ❌ Failed to delete intern:", err);
     throw err;
   }
 };
