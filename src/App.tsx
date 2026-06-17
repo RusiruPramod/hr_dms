@@ -98,8 +98,22 @@ function App() {
           />
 
           {/* Public Document Routes */}
-          <Route path="/nda" element={<NDA />} />
-          <Route path="/offer-letter" element={<OfferLetter />} />
+          <Route
+            path="/nda"
+            element={
+              <ProtectedRoute>
+                <NDA />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/offer-letter"
+            element={
+              <ProtectedRoute>
+                <OfferLetter />
+              </ProtectedRoute>
+            }
+          />
 
           {/* 404 Route */}
           <Route path="*" element={<NotFound />} />

@@ -132,17 +132,18 @@ export default function OfferLetter() {
         </Card>
 
         {/* Preview */}
-        {intern ? (
-          <div className="border rounded-lg p-6 bg-white shadow-sm max-h-[80vh] overflow-y-auto">
+        <div className="border rounded-lg p-6 bg-white shadow-sm max-h-[80vh] overflow-y-auto">
+          {intern ? (
             <div ref={previewRef}>
               <OfferLetterDocument intern={intern} offerDate={offerDate} />
             </div>
-          </div>
-        ) : (
-          <div className="border rounded-lg p-12 bg-muted/30 flex items-center justify-center">
-            <p className="text-muted-foreground">Select an intern to preview offer letter</p>
-          </div>
-        )}
+          ) : (
+            <div ref={previewRef} className="text-muted-foreground text-sm space-y-4">
+              <p className="font-semibold">Offer Letter Template</p>
+              <OfferLetterDocument intern={null} offerDate={offerDate} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
