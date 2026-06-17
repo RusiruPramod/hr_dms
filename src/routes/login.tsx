@@ -47,13 +47,13 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
-        <div className="flex items-center gap-4 mb-6">
-          <img src={logo} alt="Logo" className="h-12 w-auto" />
+        <div className="flex flex-col items-center gap-1 mb-6">
+          <img src={logo} alt="Logo" className="h-24 w-auto" />
           <h1 className="text-2xl font-semibold">HR Document Management</h1>
         </div>
 
-        <form onSubmit={login} className="space-y-4">
-          <div>
+        <form onSubmit={login} className="space-y-6">
+          <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
@@ -64,7 +64,7 @@ export default function Login() {
             />
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
@@ -75,7 +75,7 @@ export default function Login() {
             />
           </div>
 
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-3">
             <Button type="submit" disabled={loading} className="flex-1">
               {loading ? 'Signing in…' : 'Sign in'}
             </Button>
@@ -90,12 +90,6 @@ export default function Login() {
             </Button>
           </div>
         </form>
-
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <p className="text-xs text-blue-900">
-            <strong>Demo:</strong> Use any email/password to create a test account. Firebase handles authentication.
-          </p>
-        </div>
       </div>
     </div>
   )
