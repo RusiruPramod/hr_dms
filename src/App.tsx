@@ -13,6 +13,7 @@ import RecordDetails from './routes/RecordDetails'
 import RecordNew from './routes/RecordNew'
 import NDA from './routes/nda'
 import OfferLetter from './routes/OfferLetter'
+import DocsPage from './routes/docs'
 import NotFound from './routes/404'
 
 const queryClient = new QueryClient()
@@ -54,10 +55,15 @@ function App() {
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
 
-          {/* Redirect root to records */}
-          <Route path="/" element={<Navigate to="/records" replace />} />
-
           {/* Protected Routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/records"
             element={
@@ -79,6 +85,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <RecordNew />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/docs"
+            element={
+              <ProtectedRoute>
+                <DocsPage />
               </ProtectedRoute>
             }
           />

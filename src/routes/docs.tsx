@@ -1,27 +1,9 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { FileText, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { getCurrentUser } from "@/hooks/use-auth";
 
-export const Route = createFileRoute("/docs")({
-  head: () => ({
-    meta: [
-      { title: "Documents — DocuFlow HR" },
-      { name: "description", content: "Generate and manage HR documents." },
-    ],
-  }),
-  beforeLoad: async () => {
-    const user = getCurrentUser();
-    if (!user) {
-      throw redirect({ to: "/login" });
-    }
-  },
-  component: DocsPage,
-});
-
-function DocsPage() {
+export default function DocsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-8">
       <div className="max-w-4xl mx-auto">
