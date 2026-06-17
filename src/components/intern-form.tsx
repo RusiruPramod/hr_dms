@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -85,7 +85,7 @@ export function InternForm({
     try {
       const saved = await saveIntern(form, editingId);
       toast.success(editingId ? "Record updated" : "Record created");
-      navigate({ to: "/records/$id", params: { id: saved.id } });
+      navigate(`/records/${saved.id}`);
     } catch (err) {
       console.error(err);
       toast.error("Failed to save record");

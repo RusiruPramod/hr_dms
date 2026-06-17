@@ -6,12 +6,12 @@ import { AppSidebar } from '@/components/app-sidebar'
 import { useAuth } from '@/hooks/use-auth'
 
 // Pages
-import Login from './routes/Login'
+import Login from './routes/login'
 import Home from './routes/Home'
 import Records from './routes/Records'
 import RecordDetails from './routes/RecordDetails'
 import RecordNew from './routes/RecordNew'
-import NDA from './routes/NDA'
+import NDA from './routes/nda'
 import OfferLetter from './routes/OfferLetter'
 import NotFound from './routes/404'
 

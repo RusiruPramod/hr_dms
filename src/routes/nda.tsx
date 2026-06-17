@@ -1,6 +1,6 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useRef, useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Download, Printer, ShieldCheck } from "lucide-react";
@@ -18,33 +18,13 @@ import {
 import { listInterns } from "@/lib/interns";
 import { NdaDocument } from "@/components/nda-document";
 import { exportElementToPdf, generatePdfBase64 } from "@/lib/pdf";
-import { getCurrentUser } from "@/hooks/use-auth";
-
-const search = z.object({ id: z.string().optional() });
-
-export const Route = createFileRoute("/nda")({
-  validateSearch: (s) => search.parse(s),
-  head: () => ({
-    meta: [
-      { title: "NDA Agreement — DocuFlow HR" },
-      { name: "description", content: "Generate, preview and export NDA agreements for interns." },
-    ],
-  }),
-  beforeLoad: async () => {
-    const user = getCurrentUser();
-    if (!user) {
-      throw redirect({ to: "/login" });
-    }
-  },
-  component: NdaPage,
-});
 
 function NdaPage() {
-  const { id } = Route.useSearch();
-  const navigate = Route.useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const id = searchParams.get("id") || undefined;
   const { data: interns = [] } = useQuery({ queryKey: ["interns"], queryFn: listInterns });
 
-  const [selectedId, setSelectedId] = useState<string | undefined>(id);
+  const [selectedId, setSelectedId] = useState<string | undefined>(id ?? undefined);
   const [agreementDate, setAgreementDate] = useState<string>(() =>
     new Date().toISOString().slice(0, 10),
   );
@@ -61,7 +41,7 @@ function NdaPage() {
 
   const onSelect = (val: string) => {
     setSelectedId(val);
-    navigate({ search: { id: val }, replace: true });
+    setSearchParams({ id: val });
   };
 
   const onExport = async () => {
@@ -185,3 +165,5 @@ function NdaPage() {
     </div>
   );
 }
+
+export default NdaPage;

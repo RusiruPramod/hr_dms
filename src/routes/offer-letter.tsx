@@ -1,6 +1,6 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useRef, useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Download, Printer, FileText } from "lucide-react";
@@ -18,33 +18,13 @@ import {
 import { listInterns } from "@/lib/interns";
 import { OfferLetterDocument } from "@/components/offer-letter-document";
 import { exportElementToPdf, generatePdfBase64 } from "@/lib/pdf";
-import { getCurrentUser } from "@/hooks/use-auth";
-
-const search = z.object({ id: z.string().optional() });
-
-export const Route = createFileRoute("/offer-letter")({
-  validateSearch: (s) => search.parse(s),
-  head: () => ({
-    meta: [
-      { title: "Offer Letter — DocuFlow HR" },
-      { name: "description", content: "Generate, preview and export internship Offer Letters." },
-    ],
-  }),
-  beforeLoad: async () => {
-    const user = getCurrentUser();
-    if (!user) {
-      throw redirect({ to: "/login" });
-    }
-  },
-  component: OfferLetterPage,
-});
 
 function OfferLetterPage() {
-  const { id } = Route.useSearch();
-  const navigate = Route.useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const id = searchParams.get("id") || undefined;
   const { data: interns = [] } = useQuery({ queryKey: ["interns"], queryFn: listInterns });
 
-  const [selectedId, setSelectedId] = useState<string | undefined>(id);
+  const [selectedId, setSelectedId] = useState<string | undefined>(id ?? undefined);
   const [letterDate, setLetterDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -59,7 +39,7 @@ function OfferLetterPage() {
 
   const onSelect = (val: string) => {
     setSelectedId(val);
-    navigate({ search: { id: val }, replace: true });
+    setSearchParams({ id: val });
   };
 
   const onExport = async () => {
@@ -178,3 +158,5 @@ function OfferLetterPage() {
     </div>
   );
 }
+
+export default OfferLetterPage;

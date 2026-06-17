@@ -1,4 +1,4 @@
-import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { LayoutDashboard, Users, UserPlus, FileText } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { toast } from "sonner";
@@ -30,7 +30,7 @@ const items = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const pathname = useRouterState({ select: (r) => r.location.pathname });
+  const { pathname } = useLocation();
   const navigate = useNavigate();
 
   const isActive = (url: string) => {
@@ -87,7 +87,7 @@ export function AppSidebar() {
                 try {
                   await signOut(auth);
                   // Redirect to login page
-                  navigate({ to: "/login" });
+                  navigate("/login");
                 } catch (err) {
                   console.error("Sign-out failed", err);
                   toast.error("Failed to sign out");
