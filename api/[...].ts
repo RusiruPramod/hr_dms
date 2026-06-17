@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const serverModule = require('../dist/server/server.js');
+const serverModule = require('../../dist/server/server.js');
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   try {
@@ -45,5 +45,3 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     });
   }
 };
-
-
