@@ -45,38 +45,42 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
-        <div className="flex flex-col items-center gap-1 mb-6">
-          <img src={logo} alt="Logo" className="h-24 w-auto" />
-          <h1 className="text-2xl font-semibold">HR Document Management</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 p-4">
+      <div className="w-full max-w-sm p-4 sm:p-6 md:p-8 bg-white rounded-lg sm:rounded-xl shadow-lg sm:shadow-xl">
+        <div className="flex flex-col items-center gap-2 sm:gap-3 mb-6 sm:mb-8">
+          <img src={logo} alt="Logo" className="h-16 sm:h-20 md:h-24 w-auto" />
+          <h1 className="text-xl sm:text-2xl font-semibold text-center">HR Document Management</h1>
         </div>
 
-        <form onSubmit={login} className="space-y-6">
+        <form onSubmit={login} className="space-y-4 sm:space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-sm sm:text-base">Email</Label>
             <Input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
+              className="text-sm"
+              disabled={loading}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="text-sm sm:text-base">Password</Label>
             <Input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Your password"
+              className="text-sm"
+              disabled={loading}
             />
           </div>
 
-          <div className="flex items-center justify-between gap-3">
-            <Button type="submit" disabled={loading} className="flex-1">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3">
+            <Button type="submit" disabled={loading} className="w-full sm:flex-1 text-sm sm:text-base">
               {loading ? 'Signing in…' : 'Sign in'}
             </Button>
             <Button
@@ -84,7 +88,7 @@ export default function Login() {
               variant="outline"
               onClick={register}
               disabled={loading}
-              className="flex-1"
+              className="w-full sm:flex-1 text-sm sm:text-base"
             >
               {loading ? 'Creating…' : 'Create Account'}
             </Button>

@@ -2,10 +2,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { Pencil, Trash2, FileText, ShieldCheck, Plus, Search, Download } from 'lucide-react'
+import { Pencil, Trash2, FileText, ShieldCheck, Plus, Search, Download, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
+import { useIsMobile } from '@/hooks/use-responsive'
 import {
   Table,
   TableBody,
@@ -66,6 +67,7 @@ function toCsv(rows: InternRecord[]): string {
 export default function Records() {
   const qc = useQueryClient()
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ['interns'],
     queryFn: listInterns,
@@ -121,127 +123,220 @@ export default function Records() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-4 p-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold">Intern Records</h1>
-          <p className="text-sm text-muted-foreground">
-            Master data (Book1) — {rows.length} record(s)
-          </p>
+    <div className="w-full min-h-screen">
+      <div className="mx-auto max-w-7xl space-y-3 p-3 sm:p-4 md:p-6">
+        {/* Header */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-semibold">Intern Records</h1>
+            <p className="text-sm text-muted-foreground">
+              Master data — {rows.length} record(s)
+            </p>
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            <Button 
+              variant="outline" 
+              onClick={exportCsv} 
+              disabled={filtered.length === 0}
+              className="text-xs sm:text-sm flex-1 sm:flex-none"
+            >
+              <Download className="mr-2 h-4 w-4" /> Export
+            </Button>
+            <Button 
+              onClick={() => navigate('/records/new')}
+              className="text-xs sm:text-sm flex-1 sm:flex-none"
+            >
+              <Plus className="mr-2 h-4 w-4" /> New
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={exportCsv} disabled={filtered.length === 0}>
-            <Download className="mr-2 h-4 w-4" /> Export CSV
-          </Button>
-          <Button onClick={() => navigate('/records/new')}>
-            <Plus className="mr-2 h-4 w-4" /> New Record
-          </Button>
+
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search…"
+            className="pl-9 w-full"
+          />
         </div>
-      </div>
 
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Search by name, NIC, department…"
-          className="pl-9"
-        />
-      </div>
-
-      <Card className="overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead onClick={() => toggleSort('fullName')} className="cursor-pointer">
-                  Full Name
-                </TableHead>
-                <TableHead>NIC</TableHead>
-                <TableHead onClick={() => toggleSort('department')} className="cursor-pointer">
-                  Department
-                </TableHead>
-                <TableHead onClick={() => toggleSort('startDate')} className="cursor-pointer">
-                  Start
-                </TableHead>
-                <TableHead onClick={() => toggleSort('endDate')} className="cursor-pointer">
-                  End
-                </TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
-                    Loading…
-                  </TableCell>
-                </TableRow>
-              ) : filtered.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
-                    No records found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filtered.map((r) => (
-                  <TableRow key={r.id}>
-                    <TableCell className="font-medium">{r.fullName}</TableCell>
-                    <TableCell className="text-xs">{r.nic}</TableCell>
-                    <TableCell>{r.department}</TableCell>
-                    <TableCell>{r.startDate}</TableCell>
-                    <TableCell>{r.endDate}</TableCell>
-                    <TableCell>{r.phone}</TableCell>
-                    <TableCell className="text-right space-x-2">
+        {/* Mobile Cards View */}
+        {isMobile ? (
+          <div className="space-y-3">
+            {isLoading ? (
+              <Card className="p-6 text-center text-muted-foreground">
+                Loading…
+              </Card>
+            ) : filtered.length === 0 ? (
+              <Card className="p-6 text-center text-muted-foreground">
+                No records found
+              </Card>
+            ) : (
+              filtered.map((r) => (
+                <Card key={r.id} className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-base truncate">{r.fullName}</h3>
+                        <p className="text-xs text-muted-foreground truncate">{r.nic}</p>
+                      </div>
                       <Link to={`/records/${r.id}`}>
-                        <Button size="sm" variant="outline">
-                          <Pencil className="h-3 w-3" />
+                        <Button size="sm" variant="ghost">
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Department</p>
+                        <p className="font-medium truncate">{r.department}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Phone</p>
+                        <p className="font-medium truncate">{r.phone}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Start</p>
+                        <p className="font-medium">{r.startDate}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">End</p>
+                        <p className="font-medium">{r.endDate}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 pt-2">
+                      <Link to={`/records/${r.id}`} className="flex-1">
+                        <Button size="sm" variant="outline" className="w-full">
+                          <Pencil className="h-3 w-3 mr-1" /> Edit
                         </Button>
                       </Link>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => setDelTarget(r)}
+                        className="flex-1"
                       >
-                        <Trash2 className="h-3 w-3" />
+                        <Trash2 className="h-3 w-3 mr-1" /> Delete
                       </Button>
-                      <Link to={`/offer-letter?id=${r.id}`}>
-                        <Button size="sm" variant="outline">
-                          <FileText className="h-3 w-3" />
+                      <Link to={`/offer-letter?id=${r.id}`} className="flex-1">
+                        <Button size="sm" variant="outline" className="w-full">
+                          <FileText className="h-3 w-3 mr-1" /> Letter
                         </Button>
                       </Link>
-                      <Link to={`/nda?id=${r.id}`}>
-                        <Button size="sm" variant="outline">
-                          <ShieldCheck className="h-3 w-3" />
-                        </Button>
-                      </Link>
-                    </TableCell>
+                    </div>
+                    <Link to={`/nda?id=${r.id}`} className="w-full">
+                      <Button size="sm" variant="outline" className="w-full">
+                        <ShieldCheck className="h-3 w-3 mr-1" /> NDA
+                      </Button>
+                    </Link>
+                  </div>
+                </Card>
+              ))
+            )}
+          </div>
+        ) : (
+          /* Desktop Table View */
+          <Card className="overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead onClick={() => toggleSort('fullName')} className="cursor-pointer">
+                      Full Name
+                    </TableHead>
+                    <TableHead>NIC</TableHead>
+                    <TableHead onClick={() => toggleSort('department')} className="cursor-pointer">
+                      Department
+                    </TableHead>
+                    <TableHead onClick={() => toggleSort('startDate')} className="cursor-pointer">
+                      Start
+                    </TableHead>
+                    <TableHead onClick={() => toggleSort('endDate')} className="cursor-pointer">
+                      End
+                    </TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </Card>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                        Loading…
+                      </TableCell>
+                    </TableRow>
+                  ) : filtered.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                        No records found
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filtered.map((r) => (
+                      <TableRow key={r.id}>
+                        <TableCell className="font-medium">{r.fullName}</TableCell>
+                        <TableCell className="text-xs">{r.nic}</TableCell>
+                        <TableCell>{r.department}</TableCell>
+                        <TableCell>{r.startDate}</TableCell>
+                        <TableCell>{r.endDate}</TableCell>
+                        <TableCell>{r.phone}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
+                            <Link to={`/records/${r.id}`}>
+                              <Button size="sm" variant="outline">
+                                <Pencil className="h-3 w-3" />
+                              </Button>
+                            </Link>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setDelTarget(r)}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                            <Link to={`/offer-letter?id=${r.id}`}>
+                              <Button size="sm" variant="outline">
+                                <FileText className="h-3 w-3" />
+                              </Button>
+                            </Link>
+                            <Link to={`/nda?id=${r.id}`}>
+                              <Button size="sm" variant="outline">
+                                <ShieldCheck className="h-3 w-3" />
+                              </Button>
+                            </Link>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </Card>
+        )}
 
-      <AlertDialog open={!!delTarget} onOpenChange={(open) => !open && setDelTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Record?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete the record for {delTarget?.fullName}. This action cannot
-              be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground">
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        <AlertDialog open={!!delTarget} onOpenChange={(open) => !open && setDelTarget(null)}>
+          <AlertDialogContent className="w-[90vw] max-w-md">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Record?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete the record for {delTarget?.fullName}. This action cannot
+                be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="gap-2 flex-col-reverse sm:flex-row">
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground">
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </div>
   )
 }

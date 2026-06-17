@@ -39,9 +39,9 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div className="flex w-full min-h-screen">
+      <div className="flex w-full min-h-screen overflow-hidden">
         <AppSidebar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 overflow-y-auto w-full">{children}</main>
       </div>
     </SidebarProvider>
   )

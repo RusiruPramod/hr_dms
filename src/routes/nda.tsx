@@ -76,89 +76,94 @@ function NdaPage() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl space-y-4 p-6">
-      <div>
-        <h1 className="text-2xl font-semibold">NDA Agreement</h1>
-        <p className="text-sm text-muted-foreground">
-          First Party details auto-populate from the selected intern.
-        </p>
-      </div>
+    <div className="w-full min-h-screen">
+      <div className="mx-auto max-w-7xl space-y-3 sm:space-y-4 p-3 sm:p-4 md:p-6">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-semibold">NDA Agreement</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            First Party details auto-populate from the selected intern.
+          </p>
+        </div>
 
-      <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
-        <Card className="h-fit">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <ShieldCheck className="h-4 w-4" /> Agreement Configuration
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label>Intern (First Party)</Label>
-              <Select value={selectedId} onValueChange={onSelect}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select an intern…" />
-                </SelectTrigger>
-                <SelectContent>
-                  {interns.length === 0 ? (
-                    <div className="p-2 text-xs text-muted-foreground">
-                      No records — create one first.
-                    </div>
-                  ) : (
-                    interns.map((r) => (
-                      <SelectItem key={r.id} value={r.id}>
-                        {r.fullName} · {r.nic}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="adate">Agreement Date</Label>
-              <Input
-                id="adate"
-                type="date"
-                value={agreementDate}
-                onChange={(e) => setAgreementDate(e.target.value)}
-              />
-            </div>
-
-            {intern && (
-              <div className="rounded-md border border-border bg-muted/40 p-3 text-xs space-y-1">
-                <p>
-                  <strong>NIC:</strong> {intern.nic}
-                </p>
-                <p>
-                  <strong>Address:</strong> {intern.address}
-                </p>
-                <p>
-                  <strong>Dept:</strong> {intern.department}
-                </p>
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-[280px_1fr] xl:grid-cols-[340px_1fr]">
+          {/* Config Card */}
+          <Card className="h-fit">
+            <CardHeader className="p-3 sm:p-4 md:p-6">
+              <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+                <ShieldCheck className="h-4 w-4 flex-shrink-0" /> Configuration
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-3 sm:p-4 md:p-6 pt-0 space-y-3 sm:space-y-4">
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label className="text-xs sm:text-sm">Intern (First Party)</Label>
+                <Select value={selectedId} onValueChange={onSelect}>
+                  <SelectTrigger className="text-xs sm:text-sm">
+                    <SelectValue placeholder="Select an intern…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {interns.length === 0 ? (
+                      <div className="p-2 text-xs text-muted-foreground">
+                        No records — create one first.
+                      </div>
+                    ) : (
+                      interns.map((r) => (
+                        <SelectItem key={r.id} value={r.id} className="text-xs sm:text-sm">
+                          {r.fullName} · {r.nic}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
               </div>
-            )}
 
-            <div className="rounded-md border border-border bg-accent/40 p-3 text-xs space-y-1">
-              <p className="font-semibold">Second Party (fixed)</p>
-              <p>Ceylon Cold Stores PLC</p>
-              <p>Authorized: Wasantha Mudalige — Head of HR</p>
-              <p>Witness: Kamal Hasan — Asst. Manager HR</p>
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="adate" className="text-xs sm:text-sm">Agreement Date</Label>
+                <Input
+                  id="adate"
+                  type="date"
+                  value={agreementDate}
+                  onChange={(e) => setAgreementDate(e.target.value)}
+                  className="text-xs sm:text-sm"
+                />
+              </div>
+
+              {intern && (
+                <div className="rounded-md border border-border bg-muted/40 p-2 sm:p-3 text-[10px] sm:text-xs space-y-1">
+                  <p>
+                    <strong>NIC:</strong> {intern.nic}
+                  </p>
+                  <p>
+                    <strong>Address:</strong> {intern.address}
+                  </p>
+                  <p>
+                    <strong>Dept:</strong> {intern.department}
+                  </p>
+                </div>
+              )}
+
+              <div className="rounded-md border border-border bg-accent/40 p-2 sm:p-3 text-[10px] sm:text-xs space-y-1">
+                <p className="font-semibold">Second Party (fixed)</p>
+                <p>Ceylon Cold Stores PLC</p>
+                <p>Authorized: Wasantha Mudalige — Head of HR</p>
+                <p>Witness: Kamal Hasan — Asst. Manager HR</p>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <Button onClick={onExport} disabled={!intern} className="flex-1 text-xs sm:text-sm">
+                  <Download className="mr-2 h-3 sm:h-4 w-3 sm:w-4" /> PDF
+                </Button>
+                <Button onClick={() => window.print()} variant="outline" disabled={!intern} className="text-xs sm:text-sm px-2 sm:px-3">
+                  <Printer className="h-3 sm:h-4 w-3 sm:w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Preview Area */}
+          <div className="overflow-auto rounded-lg bg-muted/40 p-3 sm:p-4 max-h-[70vh] sm:max-h-[80vh]">
+            <div ref={previewRef} className="print:m-0">
+              <NdaDocument intern={intern} agreementDate={agreementDate} />
             </div>
-
-            <div className="flex gap-2 pt-2">
-              <Button onClick={onExport} disabled={!intern} className="flex-1">
-                <Download className="mr-2 h-4 w-4" /> PDF
-              </Button>
-              <Button onClick={() => window.print()} variant="outline" disabled={!intern}>
-                <Printer className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="overflow-auto rounded-lg bg-muted/40 p-4">
-          <div ref={previewRef}>
-            <NdaDocument intern={intern} agreementDate={agreementDate} />
           </div>
         </div>
       </div>

@@ -1,7 +1,9 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, UserPlus, FileText } from "lucide-react";
+import { LayoutDashboard, Users, UserPlus, FileText, Menu, X } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-responsive";
+import { useSwipeGestures } from "@/hooks/use-gestures";
 
 import {
   Sidebar,
@@ -28,10 +30,28 @@ const items = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const { state, toggleSidebar } = useSidebar();
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+
+  // Handle swipe to open sidebar on mobile
+  useSwipeGestures(
+    {
+      onSwipeRight: () => {
+        if (isMobile && collapsed) {
+          toggleSidebar();
+        }
+      },
+      onSwipeLeft: () => {
+        if (isMobile && !collapsed) {
+          toggleSidebar();
+        }
+      },
+    },
+    true
+  );
 
   const isActive = (url: string) => {
     if (pathname === url) return true;
@@ -42,9 +62,12 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border">
-        <div className="flex items-center gap-2.5 px-2 py-2">
+    <Sidebar 
+      collapsible={isMobile ? "icon" : "icon"}
+      className="transition-all duration-300"
+    >
+      <SidebarHeader className="border-b border-sidebar-border flex flex-row items-center justify-between md:justify-start">
+        <div className="flex items-center gap-2.5 px-2 py-2 flex-1">
           <img src={logo} alt="Elephant House" className="h-9 w-9 shrink-0 object-contain" />
           {!collapsed && (
             <div className="min-w-0">
@@ -55,19 +78,39 @@ export function AppSidebar() {
             </div>
           )}
         </div>
+        {isMobile && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleSidebar}
+            className="ml-auto md:hidden"
+          >
+            {collapsed ? <Menu className="h-5 w-5" /> : <X className="h-5 w-5" />}
+          </Button>
+        )}
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="flex-1 overflow-y-auto">
         <SidebarGroup>
           <SidebarGroupLabel>Workspace</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton asChild isActive={isActive(item.url)} tooltip={item.title}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={isActive(item.url)} 
+                    tooltip={item.title}
+                    onClick={() => {
+                      // Close sidebar on mobile after navigation
+                      if (isMobile && !collapsed) {
+                        toggleSidebar();
+                      }
+                    }}
+                  >
                     <Link to={item.url} className="flex items-center gap-2">
-                      <item.icon className="h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {!collapsed && <span className="truncate">{item.title}</span>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -79,8 +122,8 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border">
         {!collapsed && (
-          <div className="px-2 py-2">
-            <p className="text-[10px] text-muted-foreground mb-2">v1.0 · Internship Automation</p>
+          <div className="px-2 py-2 space-y-2">
+            <p className="text-[10px] text-muted-foreground">v1.0 · Internship Automation</p>
             <Button
               variant="ghost"
               onClick={async () => {

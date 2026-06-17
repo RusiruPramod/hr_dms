@@ -25,76 +25,81 @@ export default function Home() {
   ]
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 p-6">
-      <div className="flex items-end justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">Dashboard</h1>
-          <p className="text-sm text-muted-foreground">
-            Manage intern master records and generate offer letters & NDA agreements.
-          </p>
+    <div className="w-full min-h-screen">
+      <div className="mx-auto max-w-7xl space-y-4 sm:space-y-6 p-3 sm:p-4 md:p-6">
+        {/* Header */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex-1">
+            <h1 className="text-2xl sm:text-3xl font-semibold">Dashboard</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Manage intern master records and generate offer letters & NDA agreements.
+            </p>
+          </div>
+          <Badge variant={firebaseEnabled ? 'default' : 'secondary'} className="w-fit">
+            {firebaseEnabled ? 'Firebase' : 'Local'}
+          </Badge>
         </div>
-        <Badge variant={firebaseEnabled ? 'default' : 'secondary'}>
-          {firebaseEnabled ? 'Firebase synced' : 'Local storage'}
-        </Badge>
-      </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((s) => (
-          <Link key={s.label} to={s.to}>
-            <Card className="transition-shadow hover:shadow-elegant">
-              <CardContent className="flex items-center justify-between p-5">
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">{s.label}</p>
-                  <p className="mt-1 text-3xl font-semibold">{isLoading ? '…' : s.value}</p>
-                </div>
-                <div className="rounded-xl bg-accent p-3 text-accent-foreground">
-                  <s.icon className="h-5 w-5" />
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Recent Records</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <p className="text-sm text-muted-foreground">Loading…</p>
-          ) : interns.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-border p-8 text-center">
-              <p className="text-sm text-muted-foreground">
-                No intern records yet.{' '}
-                <Link to="/records/new" className="text-primary underline">
-                  Create the first record
-                </Link>
-                .
-              </p>
-            </div>
-          ) : (
-            <ul className="divide-y divide-border">
-              {interns.slice(0, 5).map((r) => (
-                <li key={r.id} className="flex items-center justify-between py-3">
-                  <div>
-                    <p className="text-sm font-medium">{r.fullName}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {r.department} · {r.startDate} → {r.endDate}
-                    </p>
+        {/* Stats Grid */}
+        <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
+          {stats.map((s) => (
+            <Link key={s.label} to={s.to}>
+              <Card className="transition-shadow hover:shadow-elegant h-full">
+                <CardContent className="flex flex-col gap-2 p-3 sm:p-4 md:p-5">
+                  <p className="text-[10px] sm:text-xs uppercase tracking-wide text-muted-foreground truncate">{s.label}</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-2xl sm:text-3xl font-semibold">{isLoading ? '…' : s.value}</p>
+                    <div className="rounded-lg sm:rounded-xl bg-accent p-2 sm:p-3 text-accent-foreground flex-shrink-0">
+                      <s.icon className="h-4 sm:h-5 w-4 sm:w-5" />
+                    </div>
                   </div>
-                  <Link
-                    to={`/records/${r.id}`}
-                    className="text-xs text-primary hover:underline"
-                  >
-                    Edit
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+
+        {/* Recent Records */}
+        <Card className="w-full">
+          <CardHeader className="p-3 sm:p-4 md:p-6 pb-2 sm:pb-3 md:pb-4">
+            <CardTitle className="text-sm sm:text-base">Recent Records</CardTitle>
+          </CardHeader>
+          <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+            {isLoading ? (
+              <p className="text-xs sm:text-sm text-muted-foreground">Loading…</p>
+            ) : interns.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-border p-6 sm:p-8 text-center">
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  No intern records yet.{' '}
+                  <Link to="/records/new" className="text-primary underline">
+                    Create the first record
                   </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </CardContent>
-      </Card>
+                  .
+                </p>
+              </div>
+            ) : (
+              <ul className="divide-y divide-border">
+                {interns.slice(0, 5).map((r) => (
+                  <li key={r.id} className="flex items-center justify-between py-2 sm:py-3 gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs sm:text-sm font-medium truncate">{r.fullName}</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                        {r.department} · {r.startDate} → {r.endDate}
+                      </p>
+                    </div>
+                    <Link
+                      to={`/records/${r.id}`}
+                      className="text-[10px] sm:text-xs text-primary hover:underline whitespace-nowrap flex-shrink-0"
+                    >
+                      Edit
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

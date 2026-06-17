@@ -97,14 +97,16 @@ export function InternForm({
   const dur = durationMonths(form.startDate, form.endDate);
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={onSubmit} className="space-y-4 sm:space-y-6">
+      {/* Candidate Information */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Candidate Information</CardTitle>
+        <CardHeader className="p-3 sm:p-4 md:p-6">
+          <CardTitle className="text-base sm:text-lg">Candidate Information</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2">
+        <CardContent className="p-3 sm:p-4 md:p-6 pt-0 grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2">
+          {/* Full Name with suggestions */}
           <div className="md:col-span-2 relative">
-            <Label htmlFor="fullName">Full Name *</Label>
+            <Label htmlFor="fullName" className="text-xs sm:text-sm">Full Name *</Label>
             <Input
               id="fullName"
               value={form.fullName}
@@ -115,6 +117,7 @@ export function InternForm({
               onFocus={() => setOpenSuggest(true)}
               placeholder="e.g. Tashen Chamikara Maddumabandara"
               autoComplete="off"
+              className="text-xs sm:text-sm"
             />
             {openSuggest && suggestions.length > 0 && (
               <div className="absolute z-20 mt-1 w-full rounded-md border bg-popover p-1 shadow-lg">
@@ -123,119 +126,144 @@ export function InternForm({
                     key={s.id}
                     type="button"
                     onClick={() => pickSuggestion(s)}
-                    className="w-full rounded-md px-2 py-1.5 text-left text-sm hover:bg-accent"
+                    className="w-full rounded-md px-2 py-1.5 text-left text-xs sm:text-sm hover:bg-accent"
                   >
-                    <div className="font-medium">{s.fullName}</div>
-                    <div className="text-xs text-muted-foreground">NIC: {s.nic}</div>
+                    <div className="font-medium truncate">{s.fullName}</div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground truncate">NIC: {s.nic}</div>
                   </button>
                 ))}
               </div>
             )}
           </div>
 
+          {/* Name with Initials */}
           <div>
-            <Label htmlFor="nameInit">Name with Initials</Label>
+            <Label htmlFor="nameInit" className="text-xs sm:text-sm">Name with Initials</Label>
             <Input
               id="nameInit"
               value={form.nameWithInitials}
               onChange={(e) => update("nameWithInitials", e.target.value)}
               placeholder="T.C. Maddumabandara"
+              className="text-xs sm:text-sm"
             />
           </div>
+
+          {/* NIC */}
           <div>
-            <Label htmlFor="nic">NIC *</Label>
+            <Label htmlFor="nic" className="text-xs sm:text-sm">NIC *</Label>
             <Input
               id="nic"
               value={form.nic}
               onChange={(e) => update("nic", e.target.value)}
               placeholder="200128801806"
+              className="text-xs sm:text-sm"
             />
           </div>
 
+          {/* Home Address */}
           <div className="md:col-span-2">
-            <Label htmlFor="addr">Home Address *</Label>
+            <Label htmlFor="addr" className="text-xs sm:text-sm">Home Address *</Label>
             <Textarea
               id="addr"
               value={form.address}
               onChange={(e) => update("address", e.target.value)}
               rows={2}
               placeholder="No. 140B, Suwasewa Mawatha, …"
+              className="text-xs sm:text-sm"
             />
           </div>
 
+          {/* Telephone */}
           <div>
-            <Label htmlFor="phone">Telephone</Label>
+            <Label htmlFor="phone" className="text-xs sm:text-sm">Telephone</Label>
             <Input
               id="phone"
               value={form.phone}
               onChange={(e) => update("phone", e.target.value)}
               placeholder="0716841036"
+              className="text-xs sm:text-sm"
             />
           </div>
+
+          {/* Department */}
           <div>
-            <Label htmlFor="dept">Department *</Label>
+            <Label htmlFor="dept" className="text-xs sm:text-sm">Department *</Label>
             <Input
               id="dept"
               value={form.department}
               onChange={(e) => update("department", e.target.value)}
               placeholder="Human Resource Department"
+              className="text-xs sm:text-sm"
             />
           </div>
         </CardContent>
       </Card>
 
+      {/* Internship Details */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Internship Details</CardTitle>
+        <CardHeader className="p-3 sm:p-4 md:p-6">
+          <CardTitle className="text-base sm:text-lg">Internship Details</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-3">
+        <CardContent className="p-3 sm:p-4 md:p-6 pt-0 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+          {/* Start Date */}
           <div>
-            <Label htmlFor="start">Start Date *</Label>
+            <Label htmlFor="start" className="text-xs sm:text-sm">Start Date *</Label>
             <Input
               id="start"
               type="date"
               value={form.startDate}
               onChange={(e) => update("startDate", e.target.value)}
+              className="text-xs sm:text-sm"
             />
           </div>
+
+          {/* End Date */}
           <div>
-            <Label htmlFor="end">End Date *</Label>
+            <Label htmlFor="end" className="text-xs sm:text-sm">End Date *</Label>
             <Input
               id="end"
               type="date"
               value={form.endDate}
               onChange={(e) => update("endDate", e.target.value)}
+              className="text-xs sm:text-sm"
             />
           </div>
+
+          {/* Duration */}
           <div>
-            <Label htmlFor="duration">Duration</Label>
+            <Label htmlFor="duration" className="text-xs sm:text-sm">Duration</Label>
             <Input
               id="duration"
               value={form.duration || dur}
               onChange={(e) => update("duration", e.target.value)}
               placeholder={String(dur)}
+              className="text-xs sm:text-sm"
             />
-            <p className="text-xs text-muted-foreground mt-1">
-              Clear to use auto-calculated duration.
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+              Clear to auto-calculate.
             </p>
           </div>
-          <div className="md:col-span-3">
-            <Label htmlFor="sup">Supervisor Name &amp; Designation *</Label>
+
+          {/* Supervisor */}
+          <div className="sm:col-span-2 md:col-span-3">
+            <Label htmlFor="sup" className="text-xs sm:text-sm">Supervisor Name &amp; Designation *</Label>
             <Input
               id="sup"
               value={form.supervisor}
               onChange={(e) => update("supervisor", e.target.value)}
               placeholder="Wasantha Mudalige — Head of Human Resource Operation"
+              className="text-xs sm:text-sm"
             />
           </div>
         </CardContent>
       </Card>
 
-      <div className="flex items-center justify-end gap-2">
-        <Button type="button" variant="outline" onClick={() => navigate("/records")}>
+      {/* Action Buttons */}
+      <div className="flex items-center justify-end gap-2 flex-col-reverse sm:flex-row">
+        <Button type="button" variant="outline" onClick={() => navigate("/records")} className="w-full sm:w-auto text-xs sm:text-sm">
           Cancel
         </Button>
-        <Button type="submit" disabled={submitting}>
+        <Button type="submit" disabled={submitting} className="w-full sm:w-auto text-xs sm:text-sm">
           {submitting ? "Saving…" : editingId ? "Update record" : "Save record"}
         </Button>
       </div>

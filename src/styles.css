@@ -98,6 +98,50 @@
   --sidebar-ring: oklch(0.72 0.19 138);
 }
 
+/* Responsive utility classes */
+@layer utilities {
+  /* Mobile first - base utilities apply to all screen sizes */
+  .touch-friendly {
+    @apply p-3 active:scale-95 transition-transform;
+  }
+
+  /* Tablet and up */
+  @media (min-width: 768px) {
+    .tablet\:grid-cols-2 {
+      @apply grid-cols-2;
+    }
+  }
+
+  /* Desktop and up */
+  @media (min-width: 1024px) {
+    .desktop\:grid-cols-3 {
+      @apply grid-cols-3;
+    }
+    .desktop\:max-w-4xl {
+      @apply max-w-4xl;
+    }
+  }
+}
+
+/* Print styles for PDF export */
+@media print {
+  .no-print {
+    @apply hidden;
+  }
+
+  body {
+    @apply bg-white;
+  }
+
+  .print\:bg-white {
+    @apply bg-white;
+  }
+
+  .print\:m-0 {
+    @apply m-0;
+  }
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
