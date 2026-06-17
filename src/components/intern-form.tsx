@@ -232,7 +232,7 @@ export function InternForm({
       </Card>
 
       <div className="flex items-center justify-end gap-2">
-        <Button type="button" variant="outline" onClick={() => navigate({ to: "/records" })}>
+        <Button type="button" variant="outline" onClick={() => navigate("/records")}>
           Cancel
         </Button>
         <Button type="submit" disabled={submitting}>
