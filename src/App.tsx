@@ -1,10 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { Toaster } from '@/components/ui/sonner'
-import { SidebarProvider } from '@/components/ui/sidebar'
+import { SidebarProvider, useSidebar } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
 import { MobileHeader } from '@/components/mobile-header'
 import { useAuth } from '@/hooks/use-auth'
+import { useSwipeGestures } from '@/hooks/use-gestures'
+import { useIsMobile } from '@/hooks/use-responsive'
 
 // Pages
 import Login from './routes/login'
@@ -19,7 +21,37 @@ import NotFound from './routes/404'
 
 const queryClient = new QueryClient()
 
-// Protected route wrapper
+// Protected route wrapper with swipe gesture support
+function ProtectedRouteContent({ children }: { children: React.ReactNode }) {
+  const { state, toggleSidebar } = useSidebar()
+  const isMobile = useIsMobile()
+  const isOpen = state === "expanded"
+
+  // Swipe handlers for mobile sidebar
+  useSwipeGestures(
+    {
+      onSwipeRight: () => {
+        if (isMobile && !isOpen) {
+          toggleSidebar()
+        }
+      },
+      onSwipeLeft: () => {
+        if (isMobile && isOpen) {
+          toggleSidebar()
+        }
+      },
+    },
+    isMobile
+  )
+
+  return (
+    <div className="flex w-full min-h-screen overflow-hidden pt-[72px] md:pt-0">
+      <AppSidebar />
+      <main className="flex-1 overflow-y-auto w-full">{children}</main>
+    </div>
+  )
+}
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
 
@@ -41,10 +73,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <MobileHeader />
-      <div className="flex w-full min-h-screen overflow-hidden pt-[72px] md:pt-0">
-        <AppSidebar />
-        <main className="flex-1 overflow-y-auto w-full">{children}</main>
-      </div>
+      <ProtectedRouteContent>{children}</ProtectedRouteContent>
     </SidebarProvider>
   )
 }

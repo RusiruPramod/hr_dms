@@ -44,13 +44,14 @@ export function MobileHeader() {
   return (
     <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-sidebar-border">
       <div className="flex items-center justify-between px-4 py-3 gap-2">
-        {/* Hamburger Menu */}
+        {/* Hamburger Menu - with hover feedback */}
         <Button
           variant="ghost"
           size="icon"
           onClick={toggleSidebar}
-          className="flex-shrink-0"
-          aria-label="Toggle menu"
+          className="flex-shrink-0 active:scale-95 transition-transform"
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+          title={isOpen ? "Close menu" : "Open menu or swipe right"}
         >
           {isOpen ? (
             <X className="h-5 w-5" />
