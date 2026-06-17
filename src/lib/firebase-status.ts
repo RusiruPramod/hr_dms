@@ -8,7 +8,7 @@ import { db, auth, firebaseEnabled } from './firebase'
 
 export async function checkFirebaseStatus() {
   console.log('🔍 Firebase Status Check Started...')
-  console.log('=' * 50)
+  console.log('=' .repeat(50))
 
   // 1. Check Configuration
   console.log('\n1️⃣ CONFIGURATION STATUS:')
@@ -29,7 +29,13 @@ export async function checkFirebaseStatus() {
       console.log(`   📋 Sample fields:`, Object.keys(firstDoc.data()).slice(0, 5))
     }
   } catch (err: any) {
-    console.error(`   ❌ Firestore Connection Failed:`, err.message)
+    if (err?.code === 'permission-denied') {
+      console.error(`   ❌ PERMISSION DENIED - FIX REQUIRED!`)
+      console.error(`   ⚠️ Firestore security rules are blocking access`)
+      console.error(`   📖 Fix: See docs/FIREBASE_QUICK_FIX.md`)
+    } else {
+      console.error(`   ❌ Firestore Connection Failed:`, err.message)
+    }
     console.error(`   Error Code: ${err.code}`)
   }
 
@@ -52,7 +58,7 @@ export async function checkFirebaseStatus() {
   console.log(`   Current User: ${auth?.currentUser?.email || 'Not authenticated'}`)
   console.log(`   User ID: ${auth?.currentUser?.uid || 'N/A'}`)
 
-  console.log('\n' + '=' * 50)
+  console.log('\n' + '=' .repeat(50))
   console.log('✅ Status check complete. Check results above.')
 }
 
@@ -61,4 +67,30 @@ export async function logDataFlow(action: string, data: any) {
   console.log(`\n📡 [${timestamp}] Data Flow: ${action}`)
   console.log(`   Payload:`, data)
   console.log(`   Firebase Enabled: ${firebaseEnabled}`)
+}
+
+export function showPermissionError() {
+  console.error('%c⚠️ FIREBASE PERMISSION ERROR', 'color: red; font-size: 16px; font-weight: bold;')
+  console.error('%c🔐 Firestore security rules are blocking access', 'color: red; font-size: 14px;')
+  console.error('%c📖 QUICK FIX:', 'color: orange; font-size: 14px; font-weight: bold;')
+  console.log(`
+1. Go to Firebase Console: https://console.firebase.google.com
+2. Select: hr-document-management-abfaa project
+3. Go to: Firestore Database → Rules
+4. Replace all rules with:
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+
+5. Click: PUBLISH
+6. Hard refresh browser: Ctrl+Shift+R
+
+📖 See docs/FIREBASE_QUICK_FIX.md for details
+  `)
 }

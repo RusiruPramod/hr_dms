@@ -2,6 +2,7 @@ import { collection, getDocs, getDoc, doc, setDoc, deleteDoc, query, updateDoc }
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { z } from "zod";
 import { db, storage, auth } from "../firebase";
+import { showPermissionError } from "../firebase-status";
 import type { InternRecord } from "../types";
 
 function newId() {
@@ -16,8 +17,13 @@ export const listInternsServer = async () => {
     const rows = snap.docs.map((d) => d.data() as InternRecord);
     console.log(`[Firestore] ✅ Query successful: ${rows.length} records`);
     return rows.sort((a, b) => b.updatedAt - a.updatedAt);
-  } catch (err) {
-    console.error("[Firestore] ❌ Failed to list interns:", err);
+  } catch (err: any) {
+    if (err?.code === 'permission-denied') {
+      console.error("[Firestore] ❌ Failed to list interns: FirebaseError: Missing or insufficient permissions.");
+      showPermissionError();
+    } else {
+      console.error("[Firestore] ❌ Failed to list interns:", err);
+    }
     throw err;
   }
 };
@@ -37,6 +43,7 @@ export const getInternServer = async (id: string) => {
   } catch (err: any) {
     if (err?.code === 'permission-denied') {
       console.error(`[Firestore] 🔐 Permission Denied (Code: ${err.code}):`, err.message);
+      showPermissionError();
     } else {
       console.error(`[Firestore] ❌ Failed to get intern:`, err);
     }
@@ -82,8 +89,13 @@ export const saveInternServer = async (input: {
     await setDoc(doc(db, "interns", recordId), record, { merge: true });
     console.log(`[Firestore] ✅ Save successful: ${recordId}`);
     return record;
-  } catch (err) {
-    console.error("[Firestore] ❌ Failed to save intern:", err);
+  } catch (err: any) {
+    if (err?.code === 'permission-denied') {
+      console.error("[Firestore] ❌ Failed to save intern: FirebaseError: Missing or insufficient permissions.");
+      showPermissionError();
+    } else {
+      console.error("[Firestore] ❌ Failed to save intern:", err);
+    }
     throw err;
   }
 };
@@ -137,8 +149,13 @@ export const deleteInternServer = async (id: string) => {
       await deleteDoc(docRef);
       console.log(`[Firestore] ✅ Delete successful: ${id}`);
     }
-  } catch (err) {
-    console.error("[Firestore] ❌ Failed to delete intern:", err);
+  } catch (err: any) {
+    if (err?.code === 'permission-denied') {
+      console.error("[Firestore] ❌ Failed to delete intern: FirebaseError: Missing or insufficient permissions.");
+      showPermissionError();
+    } else {
+      console.error("[Firestore] ❌ Failed to delete intern:", err);
+    }
     throw err;
   }
 };
