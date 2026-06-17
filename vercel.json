@@ -1,8 +1,18 @@
 {
   "buildCommand": "bun run build",
-  "outputDirectory": ".output/public",
+  "outputDirectory": "dist",
   "devCommand": "bun run dev",
   "framework": "vite",
+  "serverlessFunctionRegion": "iad1",
+  "env": [
+    "VITE_API_KEY",
+    "VITE_AUTH_DOMAIN",
+    "VITE_PROJECT_ID",
+    "VITE_STORAGE_BUCKET",
+    "VITE_MESSAGING_SENDER_ID",
+    "VITE_APP_ID",
+    "FIREBASE_STORAGE_BUCKET"
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
