@@ -1,11 +1,11 @@
-{
-  "buildCommand": "bun run build",
-  "outputDirectory": "dist/client",
-  "devCommand": "bun run dev",
-  "routes": [
+﻿{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "devCommand": "npm run dev",
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/api/[...]?path=$1"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
