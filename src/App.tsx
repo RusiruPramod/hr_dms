@@ -3,6 +3,7 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { Toaster } from '@/components/ui/sonner'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
+import { MobileHeader } from '@/components/mobile-header'
 import { useAuth } from '@/hooks/use-auth'
 
 // Pages
@@ -39,7 +40,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div className="flex w-full min-h-screen overflow-hidden">
+      <MobileHeader />
+      <div className="flex w-full min-h-screen overflow-hidden pt-[72px] md:pt-0">
         <AppSidebar />
         <main className="flex-1 overflow-y-auto w-full">{children}</main>
       </div>

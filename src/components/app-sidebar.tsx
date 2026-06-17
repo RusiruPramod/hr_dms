@@ -1,9 +1,6 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, UserPlus, FileText, Menu, X } from "lucide-react";
-import logo from "@/assets/logo.png";
-import { toast } from "sonner";
+import { Link, useLocation } from "react-router-dom";
+import { LayoutDashboard, Users, UserPlus, FileText } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-responsive";
-import { useSwipeGestures } from "@/hooks/use-gestures";
 
 import {
   Sidebar,
@@ -18,9 +15,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
-import { Button } from "@/components/ui/button";
+import logo from "@/assets/logo.png";
 
 const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -33,25 +28,7 @@ export function AppSidebar() {
   const { state, toggleSidebar } = useSidebar();
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   const isMobile = useIsMobile();
-
-  // Handle swipe to open sidebar on mobile
-  useSwipeGestures(
-    {
-      onSwipeRight: () => {
-        if (isMobile && collapsed) {
-          toggleSidebar();
-        }
-      },
-      onSwipeLeft: () => {
-        if (isMobile && !collapsed) {
-          toggleSidebar();
-        }
-      },
-    },
-    true
-  );
 
   const isActive = (url: string) => {
     if (pathname === url) return true;
@@ -61,13 +38,20 @@ export function AppSidebar() {
     return pathname.startsWith(url + "/");
   };
 
+  const handleNavClick = () => {
+    // Close sidebar on mobile after navigation
+    if (isMobile && !collapsed) {
+      toggleSidebar();
+    }
+  };
+
   return (
     <Sidebar 
-      collapsible={isMobile ? "icon" : "icon"}
+      collapsible="icon"
       className="transition-all duration-300"
     >
-      <SidebarHeader className="border-b border-sidebar-border flex flex-row items-center justify-between md:justify-start">
-        <div className="flex items-center gap-2.5 px-2 py-2 flex-1">
+      <SidebarHeader className="border-b border-sidebar-border">
+        <div className="flex items-center gap-2.5 px-2 py-2">
           <img src={logo} alt="Elephant House" className="h-9 w-9 shrink-0 object-contain" />
           {!collapsed && (
             <div className="min-w-0">
@@ -78,16 +62,6 @@ export function AppSidebar() {
             </div>
           )}
         </div>
-        {isMobile && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleSidebar}
-            className="ml-auto md:hidden"
-          >
-            {collapsed ? <Menu className="h-5 w-5" /> : <X className="h-5 w-5" />}
-          </Button>
-        )}
       </SidebarHeader>
 
       <SidebarContent className="flex-1 overflow-y-auto">
@@ -101,12 +75,7 @@ export function AppSidebar() {
                     asChild 
                     isActive={isActive(item.url)} 
                     tooltip={item.title}
-                    onClick={() => {
-                      // Close sidebar on mobile after navigation
-                      if (isMobile && !collapsed) {
-                        toggleSidebar();
-                      }
-                    }}
+                    onClick={handleNavClick}
                   >
                     <Link to={item.url} className="flex items-center gap-2">
                       <item.icon className="h-4 w-4 flex-shrink-0" />
@@ -122,24 +91,8 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border">
         {!collapsed && (
-          <div className="px-2 py-2 space-y-2">
+          <div className="px-2 py-2">
             <p className="text-[10px] text-muted-foreground">v1.0 · Internship Automation</p>
-            <Button
-              variant="ghost"
-              onClick={async () => {
-                try {
-                  await signOut(auth);
-                  // Redirect to login page
-                  navigate("/login");
-                } catch (err) {
-                  console.error("Sign-out failed", err);
-                  toast.error("Failed to sign out");
-                }
-              }}
-              className="w-full text-sm"
-            >
-              Logout
-            </Button>
           </div>
         )}
       </SidebarFooter>
