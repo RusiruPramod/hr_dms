@@ -1,4 +1,4 @@
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -53,11 +53,7 @@ export function MobileHeader() {
           aria-label={isOpen ? "Close menu" : "Open menu or swipe right"}
           title={isOpen ? "Close menu" : "Open menu or swipe right"}
         >
-          {isOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
-          )}
+          <Menu className="h-6 w-6" />
         </Button>
 
         {/* Logo & Brand */}
