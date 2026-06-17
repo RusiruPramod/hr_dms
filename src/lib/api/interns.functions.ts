@@ -25,12 +25,21 @@ export const listInternsServer = async () => {
 // 2. Get Intern
 export const getInternServer = async (id: string) => {
   try {
+    console.log(`[Firestore] 📖 Getting document: ${id}`);
     const docRef = doc(db, "interns", id);
     const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) return null;
+    if (!docSnap.exists()) {
+      console.warn(`[Firestore] ⚠️ Document not found: ${id}`);
+      return null;
+    }
+    console.log(`[Firestore] ✅ Document found: ${id}`);
     return docSnap.data() as InternRecord;
-  } catch (err) {
-    console.error("Failed to get intern:", err);
+  } catch (err: any) {
+    if (err?.code === 'permission-denied') {
+      console.error(`[Firestore] 🔐 Permission Denied (Code: ${err.code}):`, err.message);
+    } else {
+      console.error(`[Firestore] ❌ Failed to get intern:`, err);
+    }
     throw err;
   }
 };

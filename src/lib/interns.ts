@@ -111,9 +111,16 @@ export async function deleteIntern(id: string): Promise<void> {
 export async function getIntern(id: string): Promise<InternRecord | null> {
   if (firebaseEnabled) {
     try {
-      return await getInternServer({ data: id });
-    } catch (err) {
-      console.warn("Server getIntern failed, falling back to localStorage", err);
+      console.log(`[Firebase] 🔍 Fetching single intern: ${id}`);
+      const intern = await getInternServer(id);
+      console.log(`[Firebase] ✅ Fetched intern: ${id}`);
+      return intern;
+    } catch (err: any) {
+      if (err?.code === 'permission-denied') {
+        console.error(`[Firebase] 🔐 Permission Denied - Check Firestore Security Rules!`, err);
+      } else {
+        console.warn(`[Firebase] ⚠️ Server getIntern failed, falling back to localStorage`, err);
+      }
     }
   }
   const rows = await listInterns();
