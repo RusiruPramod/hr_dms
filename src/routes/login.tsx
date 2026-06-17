@@ -100,16 +100,3 @@ export default function Login() {
     </div>
   )
 }
-            >
-              {loading ? "Creating…" : "Create account"}
-            </Button>
-          </div>
-        </form>
-
-        <p className="text-xs text-muted-foreground mt-4">
-          By signing in you agree to company policies.
-        </p>
-      </div>
-    </div>
-  );
-}

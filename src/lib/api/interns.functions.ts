@@ -1,7 +1,7 @@
-import { createServerFn } from "@tanstack/react-start";
+import { collection, getDocs, getDoc, doc, setDoc, deleteDoc, query, updateDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { z } from "zod";
-import { getDb, getStorageBucket, logAuditEvent } from "../db.server";
-import { serverAuthMiddleware } from "./auth.middleware";
+import { db, storage, auth } from "../firebase";
 import type { InternRecord } from "../types";
 
 function newId() {
@@ -9,182 +9,147 @@ function newId() {
 }
 
 // 1. List Interns
-export const listInternsServer = createServerFn({ method: "GET" })
-  .middleware([serverAuthMiddleware])
-  .handler(async () => {
-    const db = getDb();
-    const snap = await db.collection("interns").get();
+export const listInternsServer = async () => {
+  try {
+    const snap = await getDocs(collection(db, "interns"));
     const rows = snap.docs.map((d) => d.data() as InternRecord);
     return rows.sort((a, b) => b.updatedAt - a.updatedAt);
-  });
+  } catch (err) {
+    console.error("Failed to list interns:", err);
+    throw err;
+  }
+};
 
 // 2. Get Intern
-export const getInternServer = createServerFn({ method: "GET" })
-  .inputValidator(z.string())
-  .middleware([serverAuthMiddleware])
-  .handler(async ({ input: id }) => {
-    const db = getDb();
-    const doc = await db.collection("interns").doc(id).get();
-    if (!doc.exists) return null;
-    return doc.data() as InternRecord;
-  });
+export const getInternServer = async (id: string) => {
+  try {
+    const docRef = doc(db, "interns", id);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) return null;
+    return docSnap.data() as InternRecord;
+  } catch (err) {
+    console.error("Failed to get intern:", err);
+    throw err;
+  }
+};
 
 // 3. Save Intern (Create or Update)
-export const saveInternServer = createServerFn({ method: "POST" })
-  .inputValidator(
-    z.object({
-      input: z.object({
-        fullName: z.string().min(1),
-        nameWithInitials: z.string().optional(),
-        nic: z.string().min(1),
-        address: z.string().min(1),
-        department: z.string().min(1),
-        startDate: z.string().min(1),
-        endDate: z.string().min(1),
-        supervisor: z.string().min(1),
-        phone: z.string().optional(),
-        duration: z.string().optional(),
-      }),
-      existingId: z.string().optional(),
-    }),
-  )
-  .middleware([serverAuthMiddleware])
-  .handler(async ({ input, context }) => {
-    const db = getDb();
+export const saveInternServer = async (input: {
+  fullName: string;
+  nameWithInitials?: string;
+  nic: string;
+  address: string;
+  department: string;
+  startDate: string;
+  endDate: string;
+  supervisor: string;
+  phone?: string;
+  duration?: string;
+}, existingId?: string) => {
+  try {
     const now = Date.now();
-    const userUid = context.user.uid;
-
-    let recordId = input.existingId || newId();
+    let recordId = existingId || newId();
     let existingRecord: any = null;
 
-    if (input.existingId) {
-      const doc = await db.collection("interns").doc(input.existingId).get();
-      if (doc.exists) {
-        existingRecord = doc.data();
+    if (existingId) {
+      const docRef = doc(db, "interns", existingId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        existingRecord = docSnap.data();
       }
     }
 
     const record: InternRecord = {
       ...(existingRecord || {}),
-      ...input.input,
+      ...input,
       id: recordId,
       createdAt: existingRecord?.createdAt ?? now,
       updatedAt: now,
     };
 
-    await db.collection("interns").doc(recordId).set(record, { merge: true });
-
-    // Write audit log
-    await logAuditEvent(
-      userUid,
-      input.existingId ? "update_intern" : "create_intern",
-      "intern",
-      recordId,
-      { fullName: record.fullName, nic: record.nic },
-    );
-
+    await setDoc(doc(db, "interns", recordId), record, { merge: true });
     return record;
-  });
+  } catch (err) {
+    console.error("Failed to save intern:", err);
+    throw err;
+  }
+};
 
 // 4. Delete Intern
-export const deleteInternServer = createServerFn({ method: "POST" })
-  .inputValidator(z.string())
-  .middleware([serverAuthMiddleware])
-  .handler(async ({ input: id, context }) => {
-    const db = getDb();
-    const userUid = context.user.uid;
+export const deleteInternServer = async (id: string) => {
+  try {
+    const docRef = doc(db, "interns", id);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      const data = docSnap.data() as InternRecord;
 
-    const doc = await db.collection("interns").doc(id).get();
-    if (doc.exists) {
-      const data = doc.data() as InternRecord;
-
-      // Cascade delete files in storage if any
-      const bucket = getStorageBucket();
-      try {
-        // Delete signatures
-        if (data.metadata?.signatures) {
-          for (const type of Object.keys(data.metadata.signatures)) {
+      // Try to delete signatures from storage
+      if (data.metadata?.signatures) {
+        for (const type of Object.keys(data.metadata.signatures)) {
+          try {
             const url = data.metadata.signatures[type];
             if (url && url.includes("signatures/")) {
               const fileName = url.substring(url.indexOf("signatures/"));
               const decodedFileName = decodeURIComponent(fileName.split("?")[0]);
-              await bucket
-                .file(decodedFileName)
-                .delete()
-                .catch(() => {});
+              const fileRef = ref(storage, decodedFileName);
+              await deleteObject(fileRef).catch(() => {});
             }
+          } catch (err) {
+            console.warn("Failed to delete signature file:", err);
           }
         }
-        // Delete documents
-        if (data.metadata?.documents) {
-          for (const docObj of data.metadata.documents) {
+      }
+
+      // Try to delete documents from storage
+      if (data.metadata?.documents) {
+        for (const docObj of data.metadata.documents) {
+          try {
             const url = docObj.storageUrl;
             if (url && url.includes("documents/")) {
               const fileName = url.substring(url.indexOf("documents/"));
               const decodedFileName = decodeURIComponent(fileName.split("?")[0]);
-              await bucket
-                .file(decodedFileName)
-                .delete()
-                .catch(() => {});
+              const fileRef = ref(storage, decodedFileName);
+              await deleteObject(fileRef).catch(() => {});
             }
+          } catch (err) {
+            console.warn("Failed to delete document file:", err);
           }
         }
-      } catch (err) {
-        console.error("Failed to delete associated storage files:", err);
       }
 
-      await db.collection("interns").doc(id).delete();
-
-      // Write audit log
-      await logAuditEvent(userUid, "delete_intern", "intern", id, {
-        fullName: data.fullName,
-        nic: data.nic,
-      });
+      await deleteDoc(docRef);
     }
-  });
+  } catch (err) {
+    console.error("Failed to delete intern:", err);
+    throw err;
+  }
+};
 
 // 5. Upload Signature
-export const uploadSignatureServer = createServerFn({ method: "POST" })
-  .inputValidator(
-    z.object({
-      internId: z.string(),
-      type: z.enum(["intern", "witness", "hr"]),
-      signatureBase64: z.string(), // PNG base64 data string (with or without header)
-    }),
-  )
-  .middleware([serverAuthMiddleware])
-  .handler(async ({ input, context }) => {
-    const db = getDb();
-    const bucket = getStorageBucket();
-    const userUid = context.user.uid;
-
-    const base64Data = input.signatureBase64.replace(/^data:image\/\w+;base64,/, "");
+export const uploadSignatureServer = async (internId: string, type: "intern" | "witness" | "hr", signatureBase64: string) => {
+  try {
+    const base64Data = signatureBase64.replace(/^data:image\/\w+;base64,/, "");
     const buffer = Buffer.from(base64Data, "base64");
-    const filePath = `signatures/${input.internId}/${input.type}-${Date.now()}.png`;
-
-    const file = bucket.file(filePath);
-    await file.save(buffer, {
+    
+    const filePath = `signatures/${internId}/${type}-${Date.now()}.png`;
+    const fileRef = ref(storage, filePath);
+    
+    await uploadBytes(fileRef, buffer, {
       contentType: "image/png",
-      metadata: {
-        metadata: {
-          uploadedBy: userUid,
-        },
-      },
     });
 
-    const [signedUrl] = await file.getSignedUrl({
-      action: "read",
-      expires: Date.now() + 100 * 365 * 24 * 60 * 60 * 1000, // ~100 years
-    });
+    const downloadUrl = await getDownloadURL(fileRef);
 
     // Update intern's signature in Firestore
-    const docRef = db.collection("interns").doc(input.internId);
-    const doc = await docRef.get();
-    if (!doc.exists) {
+    const docRef = doc(db, "interns", internId);
+    const docSnap = await getDoc(docRef);
+    
+    if (!docSnap.exists()) {
       throw new Error("Intern record not found");
     }
 
-    const currentData = doc.data() as InternRecord;
+    const currentData = docSnap.data() as InternRecord;
     const currentMetadata = currentData.metadata || {};
     const currentSignatures = currentMetadata.signatures || {};
 
@@ -192,75 +157,54 @@ export const uploadSignatureServer = createServerFn({ method: "POST" })
       ...currentMetadata,
       signatures: {
         ...currentSignatures,
-        [input.type]: signedUrl,
+        [type]: downloadUrl,
       },
     };
 
-    await docRef.update({
+    await updateDoc(docRef, {
       metadata: updatedMetadata,
       updatedAt: Date.now(),
     });
 
-    // Log the audit event
-    await logAuditEvent(userUid, "upload_signature", "intern", input.internId, {
-      type: input.type,
-      url: signedUrl,
-    });
-
-    return { url: signedUrl };
-  });
+    return { url: downloadUrl };
+  } catch (err) {
+    console.error("Failed to upload signature:", err);
+    throw err;
+  }
+};
 
 // 6. Upload Generated Document (PDF)
-export const uploadDocumentServer = createServerFn({ method: "POST" })
-  .inputValidator(
-    z.object({
-      internId: z.string(),
-      type: z.enum(["offer", "nda"]),
-      documentBase64: z.string(), // PDF base64 data (with or without header)
-      fileName: z.string(),
-    }),
-  )
-  .middleware([serverAuthMiddleware])
-  .handler(async ({ input, context }) => {
-    const db = getDb();
-    const bucket = getStorageBucket();
-    const userUid = context.user.uid;
-
-    const base64Data = input.documentBase64.replace(/^data:application\/pdf;base64,/, "");
+export const uploadDocumentServer = async (internId: string, type: "offer" | "nda", documentBase64: string, fileName: string) => {
+  try {
+    const base64Data = documentBase64.replace(/^data:application\/pdf;base64,/, "");
     const buffer = Buffer.from(base64Data, "base64");
-    const filePath = `documents/${input.internId}/${input.type}-${Date.now()}.pdf`;
-
-    const file = bucket.file(filePath);
-    await file.save(buffer, {
+    
+    const filePath = `documents/${internId}/${type}-${Date.now()}.pdf`;
+    const fileRef = ref(storage, filePath);
+    
+    await uploadBytes(fileRef, buffer, {
       contentType: "application/pdf",
-      metadata: {
-        metadata: {
-          uploadedBy: userUid,
-        },
-      },
     });
 
-    const [signedUrl] = await file.getSignedUrl({
-      action: "read",
-      expires: Date.now() + 100 * 365 * 24 * 60 * 60 * 1000, // ~100 years
-    });
+    const downloadUrl = await getDownloadURL(fileRef);
 
     // Update intern's documents history in Firestore
-    const docRef = db.collection("interns").doc(input.internId);
-    const doc = await docRef.get();
-    if (!doc.exists) {
+    const docRef = doc(db, "interns", internId);
+    const docSnap = await getDoc(docRef);
+    
+    if (!docSnap.exists()) {
       throw new Error("Intern record not found");
     }
 
-    const currentData = doc.data() as InternRecord;
+    const currentData = docSnap.data() as InternRecord;
     const currentMetadata = currentData.metadata || {};
     const currentDocs = currentMetadata.documents || [];
 
     const newDocObj = {
       id: newId(),
-      type: input.type,
-      fileName: input.fileName,
-      storageUrl: signedUrl,
+      type,
+      fileName,
+      storageUrl: downloadUrl,
       generatedAt: Date.now(),
     };
 
@@ -269,17 +213,14 @@ export const uploadDocumentServer = createServerFn({ method: "POST" })
       documents: [...currentDocs, newDocObj],
     };
 
-    await docRef.update({
+    await updateDoc(docRef, {
       metadata: updatedMetadata,
       updatedAt: Date.now(),
     });
 
-    // Log the audit event
-    await logAuditEvent(userUid, "generate_document", "intern", input.internId, {
-      type: input.type,
-      fileName: input.fileName,
-      url: signedUrl,
-    });
-
     return newDocObj;
-  });
+  } catch (err) {
+    console.error("Failed to upload document:", err);
+    throw err;
+  }
+};

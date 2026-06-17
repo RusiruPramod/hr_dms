@@ -74,14 +74,12 @@ function OfferLetterPage() {
         (async () => {
           const base64 = await generatePdfBase64(previewRef.current!);
           const { uploadDocumentServer } = await import("@/lib/api/interns.functions");
-          await uploadDocumentServer({
-            data: {
-              internId: intern.id,
-              type: "offer",
-              documentBase64: base64,
-              fileName: filename,
-            },
-          });
+          await uploadDocumentServer(
+            intern.id,
+            "offer",
+            base64,
+            filename,
+          );
         })(),
         {
           loading: "Saving copy to candidate's history...",

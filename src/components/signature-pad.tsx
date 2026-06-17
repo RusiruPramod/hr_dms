@@ -126,13 +126,7 @@ export function SignaturePad({ internId, type, onSave }: SignaturePadProps) {
       // Import the server function dynamically to avoid SSR bundles
       const { uploadSignatureServer } = await import("@/lib/api/interns.functions");
 
-      const res = await uploadSignatureServer({
-        data: {
-          internId,
-          type,
-          signatureBase64: dataUrl,
-        },
-      });
+      const res = await uploadSignatureServer(internId, type, dataUrl);
 
       toast.success("Signature saved and uploaded successfully!");
       onSave(res.url);
@@ -159,13 +153,7 @@ export function SignaturePad({ internId, type, onSave }: SignaturePadProps) {
         const base64Data = reader.result as string;
         const { uploadSignatureServer } = await import("@/lib/api/interns.functions");
 
-        const res = await uploadSignatureServer({
-          data: {
-            internId,
-            type,
-            signatureBase64: base64Data,
-          },
-        });
+        const res = await uploadSignatureServer(internId, type, base64Data);
 
         toast.success("Signature uploaded successfully!");
         onSave(res.url);

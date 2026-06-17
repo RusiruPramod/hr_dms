@@ -45,23 +45,21 @@ export async function listInterns(): Promise<InternRecord[]> {
 export async function saveIntern(input: InternInput, existingId?: string): Promise<InternRecord> {
   if (firebaseEnabled) {
     try {
-      const saved = await saveInternServer({
-        data: {
-          input: {
-            fullName: input.fullName,
-            nameWithInitials: input.nameWithInitials ?? "",
-            nic: input.nic,
-            address: input.address,
-            department: input.department,
-            startDate: input.startDate,
-            endDate: input.endDate,
-            supervisor: input.supervisor,
-            phone: input.phone ?? "",
-            duration: input.duration ?? "",
-          },
-          existingId,
+      const saved = await saveInternServer(
+        {
+          fullName: input.fullName,
+          nameWithInitials: input.nameWithInitials ?? "",
+          nic: input.nic,
+          address: input.address,
+          department: input.department,
+          startDate: input.startDate,
+          endDate: input.endDate,
+          supervisor: input.supervisor,
+          phone: input.phone ?? "",
+          duration: input.duration ?? "",
         },
-      });
+        existingId,
+      );
       // Update local storage cache
       const all = readLocal();
       const next = existingId ? all.map((r) => (r.id === saved.id ? saved : r)) : [saved, ...all];
@@ -93,7 +91,7 @@ export async function deleteIntern(id: string): Promise<void> {
 
   if (firebaseEnabled) {
     try {
-      await deleteInternServer({ data: id });
+      await deleteInternServer(id);
     } catch (err) {
       console.warn("Server deleteIntern failed", err);
     }
