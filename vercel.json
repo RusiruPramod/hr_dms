@@ -3,7 +3,6 @@
   "outputDirectory": "dist",
   "devCommand": "bun run dev",
   "framework": "vite",
-  "serverlessFunctionRegion": "iad1",
   "env": [
     "VITE_API_KEY",
     "VITE_AUTH_DOMAIN",
