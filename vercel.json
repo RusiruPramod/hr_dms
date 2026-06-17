@@ -2,14 +2,6 @@
   "buildCommand": "bun run build",
   "outputDirectory": "dist/client",
   "devCommand": "bun run dev",
-  "functions": {
-    "api/index.ts": {
-      "runtime": "nodejs@20.x"
-    },
-    "api/[...].ts": {
-      "runtime": "nodejs@20.x"
-    }
-  },
   "routes": [
     {
       "src": "/(.*)",
